@@ -6,6 +6,8 @@ click==8.1.8
 distro==1.9.0
 exceptiongroup==1.3.1
 Flask==3.1.3
+Flask-Login==0.6.3
+Flask-SQLAlchemy==3.1.1
 groq==1.0.0
 h11==0.16.0
 httpcore==1.0.9
@@ -21,6 +23,7 @@ pydantic_core==2.46.4
 pypdf==6.14.2
 python-dotenv==1.2.1
 sniffio==1.3.1
+SQLAlchemy==2.0.51
 typing-inspection==0.4.2
 typing_extensions==4.16.0
 Werkzeug==3.1.8
