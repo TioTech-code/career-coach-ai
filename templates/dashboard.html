@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | AI Career Coach</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav>
+    <h2>🤖 AI Career Coach</h2>
+    <div>
+        <a href="/">Home</a>
+        <a href="/cv-review">CV Review</a>
+    </div>
+</nav>
+
+<section class="landing-hero">
+    <div class="landing-left">
+        <span class="badge">Career Dashboard</span>
+        <h1>Choose your AI career tool</h1>
+        <p>
+            Review your CV, practise interviews, and build a career roadmap from one simple dashboard.
+        </p>
+    </div>
+
+    <div class="landing-right">
+        <div class="premium-card">
+            <h3>Today’s Progress</h3>
+            <div class="big-score">3</div>
+            <p>Career tools available</p>
+        </div>
+    </div>
+</section>
+
+<section class="cards">
+    <div class="card">
+        <h3>📄 AI CV Review</h3>
+        <p>Upload or paste your CV and get personalised AI feedback.</p>
+        <a href="/cv-review">
+            <button>Start Review →</button>
+        </a>
+    </div>
+
+    <div class="card">
+        <h3>🎤 Interview Practice</h3>
+        <p>Prepare with AI-generated interview questions based on your CV.</p>
+        <button disabled>Coming Soon</button>
+    </div>
+
+    <div class="card">
+        <h3>🛣️ Career Roadmap</h3>
+        <p>Get a personalised step-by-step plan for your future career.</p>
+        <button disabled>Coming Soon</button>
+    </div>
+</section>
+
+<footer>
+    <p>© 2026 AI Career Coach • Dashboard</p>
+</footer>
+
+</body>
+</html>

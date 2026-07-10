@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Review | AI Career Coach</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav>
+    <h2>🤖 AI Career Coach</h2>
+    <div>
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+    </div>
+</nav>
+
+<section class="landing-hero">
+    <div class="landing-left">
+        <span class="badge">AI CV Review</span>
+        <h1>Get detailed feedback on your CV</h1>
+        <p>
+            Upload your CV as a PDF or paste it below. The AI will analyse it and give
+            strengths, improvements, missing skills, interview questions, and final advice.
+        </p>
+    </div>
+
+    <div class="landing-right">
+        <div class="premium-card">
+            <h3>What the AI checks</h3>
+            <div class="mini-row"><span>Formatting</span><strong>✓</strong></div>
+            <div class="mini-row"><span>Skills</span><strong>✓</strong></div>
+            <div class="mini-row"><span>Experience</span><strong>✓</strong></div>
+            <div class="mini-row"><span>Interview prep</span><strong>✓</strong></div>
+        </div>
+    </div>
+</section>
+
+<section class="form-section">
+<form id="reviewForm" action="/review" method="POST" enctype="multipart/form-data">        <input type="file" name="cv_file" accept=".pdf">
+
+        <label>Or paste your CV</label>
+        <textarea name="cv" placeholder="Paste your CV here..."></textarea>
+<button type="submit">Analyse CV →</button>
+    </form>
+</section>
+</section>
+
+<div id="loadingScreen" style="display:none;">
+    <div class="loading-card">
+        <div class="spinner"></div>
+
+        <h2>🤖 AI Career Coach</h2>
+
+        <p>Analysing your CV...</p>
+
+        <small>This usually takes a few seconds.</small>
+    </div>
+</div>
+
+
+
+</body>
+</html>
+</body>
+</html>

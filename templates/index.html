@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Career Coach</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav>
+    <h2>🤖 AI Career Coach</h2>
+
+    <div>
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/cv-review">CV Review</a>
+    </div>
+</nav>
+
+<section class="landing-hero">
+    <div class="landing-left">
+        <span class="badge">AI-powered career platform</span>
+
+        <h1>Build a stronger CV and career plan with AI</h1>
+
+        <p>
+            Upload your CV, get instant feedback, discover missing skills,
+            and prepare for interviews with an intelligent career assistant.
+        </p>
+
+        <div class="hero-buttons">
+            <a href="/dashboard"><button>Start Free →</button></a>
+            <a href="/cv-review"><button class="secondary-btn">Review CV</button></a>
+        </div>
+    </div>
+
+    <div class="landing-right">
+        <div class="premium-card">
+            <h3>CV Analysis Preview</h3>
+            <div class="big-score">89</div>
+            <p>Overall CV Score</p>
+
+            <div class="mini-row">
+                <span>Formatting</span>
+                <strong>92%</strong>
+            </div>
+
+            <div class="mini-row">
+                <span>Skills</span>
+                <strong>84%</strong>
+            </div>
+
+            <div class="mini-row">
+                <span>Experience</span>
+                <strong>78%</strong>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="feature-card">
+        <h3>📄 AI CV Review</h3>
+        <p>Receive personalised feedback on your CV within seconds.</p>
+    </div>
+
+    <div class="feature-card">
+        <h3>🎤 Interview Practice</h3>
+        <p>Generate interview questions based on your CV and goals.</p>
+    </div>
+
+    <div class="feature-card">
+        <h3>🛣️ Career Roadmap</h3>
+        <p>Plan your next steps towards software engineering and apprenticeships.</p>
+    </div>
+</section>
+
+<section class="stats">
+    <div>
+        <h2>24/7</h2>
+        <p>AI career support</p>
+    </div>
+
+    <div>
+        <h2>5+</h2>
+        <p>Types of CV feedback</p>
+    </div>
+
+    <div>
+        <h2>100%</h2>
+        <p>Built as a real project</p>
+    </div>
+</section>
+
+<footer>
+    <p>© 2026 AI Career Coach • Built with Flask, Python and AI</p>
+</footer>
+
+</body>
+</html>

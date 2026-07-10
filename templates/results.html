@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results | AI Career Coach</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav>
+    <h2>🤖 AI Career Coach</h2>
+    <div>
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/cv-review">CV Review</a>
+    </div>
+</nav>
+
+<section class="landing-hero">
+    <div class="landing-left">
+        <span class="badge">AI Feedback Ready</span>
+        <h1>Your CV review results</h1>
+        <p>
+            Here is your personalised AI feedback. Use these suggestions to improve
+            your CV and prepare for future applications.
+        </p>
+
+        <a href="/cv-review">
+            <button>Review Another CV →</button>
+        </a>
+    </div>
+
+    <div class="landing-right">
+        <div class="premium-card">
+            <h3>Review Summary</h3>
+            <div class="big-score">AI</div>
+            <p>Personalised feedback generated</p>
+        </div>
+    </div>
+</section>
+
+<section class="form-section">
+   <div class="score-dashboard">
+
+    <div class="score-circle">
+        {{ overall_score }}
+    </div>
+
+    <h2>Overall CV Score</h2>
+
+</div>
+    <div class="feedback-box">
+    {{ feedback|safe }}
+</div>
+</section>
+
+</body>
+</html>
+<div class="score-breakdown">
+
+    {% for category, score in score_breakdown.items() %}
+
+    <div class="score-row">
+
+        <span>{{ category }}</span>
+
+        <strong>{{ score }}</strong>
+
+    </div>
+
+    {% endfor %}
+
+</div> 
