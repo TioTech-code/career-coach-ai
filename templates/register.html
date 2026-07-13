@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account</title>
+    <title>Create Account | AI Career Coach</title>
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
@@ -11,51 +11,60 @@
 
 <body>
 
-<div class="form-section">
+<section class="auth-section">
+    <div class="auth-card">
 
-    <h1>Create Your Account</h1>
-    {% if error %}
-    <div class="form-error">
-        {{ error }}
+        <h1>Create Your Account</h1>
+
+        {% if error %}
+            <div class="form-error">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+
+            <label for="name">Name</label>
+            <input
+                id="name"
+                type="text"
+                name="name"
+                autocomplete="name"
+                required
+            >
+
+            <label for="email">Email</label>
+            <input
+                id="email"
+                type="email"
+                name="email"
+                autocomplete="email"
+                required
+            >
+
+            <label for="password">Password</label>
+            <input
+                id="password"
+                type="password"
+                name="password"
+                minlength="8"
+                autocomplete="new-password"
+                required
+            >
+
+            <button type="submit">
+                Create Account
+            </button>
+
+        </form>
+
+        <p class="auth-link">
+            Already have an account?
+            <a href="/login">Log in</a>
+        </p>
+
     </div>
-{% endif %}
-<input
-    type="password"
-    name="password"
-    minlength="8"
-    required
->
-
-    <form method="POST">
-
-        <label>Name</label>
-        <input
-            type="text"
-            name="name"
-            required
-        >
-
-        <label>Email</label>
-        <input
-            type="email"
-            name="email"
-            required
-        >
-
-        <label>Password</label>
-        <input
-            type="password"
-            name="password"
-            required
-        >
-
-        <button type="submit">
-            Create Account
-        </button>
-
-    </form>
-
-</div>
+</section>
 
 </body>
 </html>
