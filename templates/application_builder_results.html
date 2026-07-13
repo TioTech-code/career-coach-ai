@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Application Builder</title>
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+<div class="logo">
+
+<i class="fa-solid fa-briefcase"></i>
+
+AI Career Coach
+
+</div>
+
+</nav>
+
+<section class="landing-hero">
+
+<h1>
+
+🚀 {{ job_title }}
+
+</h1>
+
+<p>
+
+{{ company }}
+
+</p>
+
+</section>
+
+<section class="cards">
+
+<div class="card">
+
+<h3>Application Readiness</h3>
+
+<h1>{{ readiness_score }}/100</h1>
+
+<p>{{ status }}</p>
+
+</div>
+
+<div class="card">
+
+<h3>CV Score</h3>
+
+<h1>{{ cv_score }}</h1>
+
+</div>
+
+<div class="card">
+
+<h3>Job Match</h3>
+
+<h1>{{ job_match_score }}%</h1>
+
+</div>
+
+<div class="card">
+
+<h3>Evidence</h3>
+
+<h1>{{ evidence_score }}</h1>
+
+</div>
+
+</section>
+
+<section class="form-section">
+
+<h2>
+
+Matching Keywords
+
+</h2>
+
+{% for keyword in matching_keywords %}
+
+<span class="badge">
+
+{{ keyword }}
+
+</span>
+
+{% endfor %}
+
+</section>
+
+<section class="form-section">
+
+<h2>
+
+Missing Keywords
+
+</h2>
+
+{% for keyword in missing_keywords %}
+
+<span class="badge">
+
+{{ keyword }}
+
+</span>
+
+{% endfor %}
+
+</section>
+
+<section class="form-section">
+
+<h2>
+
+AI Rewrite
+
+</h2>
+
+<div class="feedback-box">
+
+{{ rewritten_cv|safe }}
+
+</div>
+
+</section>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>

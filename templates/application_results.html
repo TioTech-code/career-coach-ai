@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Readiness Report</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<nav>
+    <h2>🤖 AI Career Coach</h2>
+
+    <div>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/application-readiness">New Report</a>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
+
+<section class="landing-hero">
+
+<div class="landing-left">
+
+<span class="badge">
+Application Readiness Report
+</span>
+
+<h1>{{ job_title }}</h1>
+
+<p>{{ company }}</p>
+
+</div>
+
+<div class="landing-right">
+
+<div class="premium-card">
+
+<h3>Overall Readiness</h3>
+
+<div class="big-score">
+
+{{ readiness_score }}
+
+</div>
+
+<p>{{ status }}</p>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="dashboard-stats">
+
+<div class="stat-card">
+<p>CV Quality</p>
+<h2>{{ cv_score }}/100</h2>
+</div>
+
+<div class="stat-card">
+<p>Job Match</p>
+<h2>{{ job_match_score }}/100</h2>
+</div>
+
+<div class="stat-card">
+<p>Evidence</p>
+<h2>{{ evidence_score }}/100</h2>
+</div>
+
+<div class="stat-card">
+<p>Readiness</p>
+<h2>{{ readiness_score }}/100</h2>
+</div>
+
+</section>
+
+<section class="cards">
+
+<div class="card">
+
+<h3>✅ Matching Keywords</h3>
+
+{% if matching_keywords %}
+
+<ul>
+
+{% for keyword in matching_keywords %}
+
+<li>{{ keyword }}</li>
+
+{% endfor %}
+
+</ul>
+
+{% else %}
+
+<p>No matching keywords found.</p>
+
+{% endif %}
+
+</div>
+
+<div class="card">
+
+<h3>⚠ Missing Keywords</h3>
+
+{% if missing_keywords %}
+
+<ul>
+
+{% for keyword in missing_keywords[:20] %}
+
+<li>{{ keyword }}</li>
+
+{% endfor %}
+
+</ul>
+
+{% else %}
+
+<p>No important keywords are missing.</p>
+
+{% endif %}
+
+</div>
+
+</section>
+
+<section class="form-section">
+
+<h2>CV Score Breakdown</h2>
+
+<div class="score-breakdown">
+
+{% set maximums = {
+"Contact":10,
+"Summary":10,
+"Education":15,
+"Experience":20,
+"Skills":15,
+"Projects":15,
+"ATS":10,
+"Grammar":5
+} %}
+
+{% for category, score in breakdown.items() %}
+
+<div class="score-item">
+
+<div class="score-row">
+
+<span>{{ category }}</span>
+
+<strong>{{ score }}/{{ maximums[category] }}</strong>
+
+</div>
+
+<div class="score-bar">
+
+<div class="score-fill"
+
+style="width: {{ (score / maximums[category] * 100)|round(0) }}%;">
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</section>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

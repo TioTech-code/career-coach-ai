@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Rewrite Results</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="logo">
+        <i class="fa-solid fa-briefcase"></i>
+        AI Career Coach
+    </div>
+
+    <div class="nav-links">
+
+        <a href="/dashboard">Dashboard</a>
+
+        <a href="/rewrite">Rewrite Another</a>
+
+        <a href="/logout">Logout</a>
+
+    </div>
+
+</nav>
+
+<section class="landing-hero">
+
+<div class="landing-left">
+
+<span class="badge">
+
+AI Rewrite Complete
+
+</span>
+
+<h1>Your CV has been improved</h1>
+
+<p>
+
+Review every suggestion below.
+
+</p>
+
+</div>
+
+<div class="landing-right">
+
+<div class="premium-card">
+
+<h3>
+
+Professional Rewrite
+
+</h3>
+
+<div class="big-score">
+
+✓
+
+</div>
+
+<p>
+
+Ready to copy into your CV
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="form-section">
+
+<div class="feedback-box">
+
+{{ improved|safe }}
+
+</div>
+
+<button onclick="copyResults()">
+
+<i class="fa-solid fa-copy"></i>
+
+Copy All
+
+</button>
+
+</section>
+
+<script>
+
+function copyResults(){
+
+const text=document.querySelector(".feedback-box").innerText;
+
+navigator.clipboard.writeText(text);
+
+alert("Copied!");
+
+}
+
+</script>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

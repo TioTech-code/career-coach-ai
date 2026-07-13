@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Builder | AI Career Coach</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<nav class="navbar">
+
+<div class="logo">
+<i class="fa-solid fa-briefcase"></i>
+AI Career Coach
+</div>
+
+<div class="nav-links">
+<a href="/dashboard">Dashboard</a>
+<a href="/history">History</a>
+<a href="/logout">Logout</a>
+</div>
+
+</nav>
+
+<section class="form-section">
+
+<h1>🚀 Build My Entire Application</h1>
+
+<form method="POST">
+
+<label>Job Title</label>
+
+<input
+type="text"
+name="job_title"
+required>
+
+<label>Company</label>
+
+<input
+type="text"
+name="company"
+required>
+
+<label>Your CV</label>
+
+<textarea
+name="cv"
+rows="12"
+required></textarea>
+
+<label>Job Description</label>
+
+<textarea
+name="job_description"
+rows="12"
+required></textarea>
+
+<button type="submit">
+
+🚀 Build My Application
+
+</button>
+
+</form>
+
+</section>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

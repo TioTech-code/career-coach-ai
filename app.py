@@ -1,23 +1,56 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
+
+from flask_login import (
+    login_user,
+    logout_user,
+    login_required,
+    current_user,
+)
+
 from groq import Groq
 from dotenv import load_dotenv
 from pypdf import PdfReader
 from werkzeug.utils import secure_filename
-from scoring import score_cv
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from config import Config
+from extensions import db, login_manager
+from models import User, Review
+
+from services.scoring import score_cv
+from services.rewriter import improve_cv
+from services.readiness import (
+    calculate_job_match,
+    calculate_evidence_score,
+    calculate_readiness_score,
+    get_readiness_status,
+)
+
 import markdown
 import os
 
 load_dotenv()
 
+app = Flask(__name__)
+
+app.config.from_object(Config)
+
+db.init_app(app)
+login_manager.init_app(app)
+
+os.makedirs(
+    app.config["UPLOAD_FOLDER"],
+    exist_ok=True,
+)
+
 client = Groq(
     api_key=os.getenv("GROQ_API_KEY")
 )
 
-app = Flask(__name__)
 
-UPLOAD_FOLDER = "uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, int(user_id))
 
 
 @app.route("/")
@@ -26,29 +59,68 @@ def index():
 
 
 @app.route("/dashboard")
+@login_required
 def dashboard():
-    return render_template("dashboard.html")
+    reviews = (
+        Review.query
+        .filter_by(user_id=current_user.id)
+        .order_by(Review.created_at.asc())
+        .all()
+    )
+
+    total_reviews = len(reviews)
+
+    if reviews:
+        scores = [review.score for review in reviews]
+
+        latest_score = scores[-1]
+        previous_score = scores[-2] if len(scores) > 1 else None
+        best_score = max(scores)
+        average_score = round(sum(scores) / len(scores))
+
+        improvement = (
+            latest_score - previous_score
+            if previous_score is not None
+            else None
+        )
+    else:
+        latest_score = None
+        previous_score = None
+        best_score = None
+        average_score = None
+        improvement = None
+
+    return render_template(
+        "dashboard.html",
+        user=current_user,
+        total_reviews=total_reviews,
+        latest_score=latest_score,
+        previous_score=previous_score,
+        best_score=best_score,
+        average_score=average_score,
+        improvement=improvement,
+    )
 
 
 @app.route("/cv-review")
+@login_required
 def cv_review():
     return render_template("cv_review.html")
 
 
 @app.route("/review", methods=["POST"])
+@login_required
 def review():
-
     cv_text = ""
 
     uploaded_file = request.files.get("cv_file")
 
     if uploaded_file and uploaded_file.filename:
-
         filename = secure_filename(uploaded_file.filename)
 
         filepath = os.path.join(
             app.config["UPLOAD_FOLDER"],
-            filename
+            filename,
         )
 
         uploaded_file.save(filepath)
@@ -56,14 +128,11 @@ def review():
         reader = PdfReader(filepath)
 
         for page in reader.pages:
-
             text = page.extract_text()
 
             if text:
                 cv_text += text + "\n"
-
     else:
-
         cv_text = request.form.get("cv", "")
 
     if not cv_text.strip():
@@ -75,30 +144,25 @@ def review():
 You are an experienced professional CV reviewer.
 
 IMPORTANT:
-Do NOT give an overall score because the application already calculates one.
+Do not give an overall score because the application already calculates one.
 
 Review this CV for any profession.
 
 Use these headings only:
 
 # 💪 Strengths
-
 Give three bullet points.
 
 # ⚠️ Improvements
-
 Give three bullet points.
 
 # 🛠 Recommended Skills
-
 Suggest three useful skills.
 
 # 🎤 Interview Questions
-
 Generate three interview questions.
 
 # 🚀 Final Advice
-
 Write one short paragraph.
 
 CV:
@@ -107,40 +171,566 @@ CV:
 """
 
     try:
-
         response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
                 {
                     "role": "user",
-                    "content": prompt
+                    "content": prompt,
                 }
             ],
-            max_tokens=700
+            max_tokens=700,
         )
 
         feedback = markdown.markdown(
             response.choices[0].message.content,
-            extensions=["extra"]
+            extensions=["extra"],
         )
 
     except Exception:
-
         feedback = """
 <h2>AI is temporarily unavailable.</h2>
-
-<p>
-Please wait a few seconds and try again.
-</p>
+<p>Please wait a few seconds and try again.</p>
 """
+
+    saved_review = Review(
+        score=overall_score,
+        feedback=feedback,
+        user_id=current_user.id,
+    )
+
+    db.session.add(saved_review)
+    db.session.commit()
 
     return render_template(
         "results.html",
         feedback=feedback,
         overall_score=overall_score,
-        score_breakdown=score_breakdown
+        score_breakdown=score_breakdown,
     )
 
 
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    error = None
+
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+
+        if not name:
+            error = "Please enter your name."
+
+        elif not email:
+            error = "Please enter your email address."
+
+        elif len(password) < 8:
+            error = "Your password must contain at least 8 characters."
+
+        elif User.query.filter_by(email=email).first():
+            error = "An account already exists with that email address."
+
+        else:
+            new_user = User(
+                name=name,
+                email=email,
+                password_hash=generate_password_hash(
+                    password,
+                    method="pbkdf2:sha256",
+                ),
+            )
+
+            db.session.add(new_user)
+            db.session.commit()
+
+            return redirect(url_for("login"))
+
+    return render_template(
+        "register.html",
+        error=error,
+    )
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    error = None
+
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+
+        user = User.query.filter_by(email=email).first()
+
+        if user and check_password_hash(user.password_hash, password):
+            login_user(user)
+            return redirect(url_for("dashboard"))
+
+        error = "Incorrect email address or password."
+
+    return render_template(
+        "login.html",
+        error=error,
+    )
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("index"))
+
+
+@app.route("/history")
+@login_required
+def history():
+    reviews = (
+        Review.query
+        .filter_by(user_id=current_user.id)
+        .order_by(Review.created_at.desc())
+        .all()
+    )
+
+    return render_template(
+        "history.html",
+        reviews=reviews,
+    )
+
+
+@app.route("/history/<int:review_id>")
+@login_required
+def view_review(review_id):
+    review = Review.query.filter_by(
+        id=review_id,
+        user_id=current_user.id,
+    ).first_or_404()
+
+    return render_template(
+        "saved_review.html",
+        review=review,
+    )
+
+
+@app.route("/job-match", methods=["GET", "POST"])
+@login_required
+def job_match():
+    if request.method == "GET":
+        return render_template("job_match.html")
+
+    cv_text = request.form.get("cv_text", "").strip()
+    job_description = request.form.get("job_description", "").strip()
+
+    if not cv_text or not job_description:
+        return render_template(
+            "job_match.html",
+            error="Please provide both your CV and the job description.",
+        )
+
+    prompt = f"""
+You are an expert recruitment consultant.
+
+Compare the candidate's CV with the job description.
+
+Do not invent qualifications, experience, or achievements.
+
+Use exactly these headings:
+
+# 🎯 Match Assessment
+Give a realistic match percentage from 0 to 100 and explain it briefly.
+
+# ✅ Matching Strengths
+Give four bullet points showing where the CV matches the role.
+
+# ⚠️ Missing Skills
+List skills requested by the employer that are missing from the CV.
+
+# 🔑 Missing Keywords
+List important ATS keywords from the job description that do not appear in the CV.
+
+# ✍️ Recommended CV Changes
+Give five specific, honest changes the candidate should make.
+
+# 🎤 Likely Interview Questions
+Generate five questions based on the role and CV.
+
+# 🚀 Final Recommendation
+Give a short practical summary.
+
+CV:
+{cv_text}
+
+JOB DESCRIPTION:
+{job_description}
+"""
+
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            max_tokens=900,
+        )
+
+        match_feedback = markdown.markdown(
+            response.choices[0].message.content,
+            extensions=["extra"],
+        )
+
+    except Exception:
+        match_feedback = """
+<h2>AI is temporarily unavailable.</h2>
+<p>Please wait a few seconds and try again.</p>
+"""
+
+    return render_template(
+        "job_match_results.html",
+        match_feedback=match_feedback,
+    )
+
+
+@app.route("/cover-letter", methods=["GET", "POST"])
+@login_required
+def cover_letter():
+    if request.method == "GET":
+        return render_template("cover_letter.html")
+
+    cv = request.form.get("cv", "").strip()
+    job = request.form.get("job", "").strip()
+
+    if not cv or not job:
+        return render_template(
+            "cover_letter.html",
+            error="Please complete both fields.",
+        )
+
+    prompt = f"""
+You are an expert recruitment consultant.
+
+Write a professional cover letter.
+
+Requirements:
+
+- One page only
+- Professional tone
+- Personalised using the CV
+- Personalised using the job description
+- Do not invent experience
+
+CV:
+
+{cv}
+
+JOB DESCRIPTION:
+
+{job}
+"""
+
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            max_tokens=900,
+        )
+
+        letter = markdown.markdown(
+            response.choices[0].message.content,
+            extensions=["extra"],
+        )
+
+    except Exception:
+        letter = """
+<h2>AI is temporarily unavailable.</h2>
+<p>Please wait a few seconds and try again.</p>
+"""
+
+    return render_template(
+        "cover_letter_results.html",
+        letter=letter,
+    )
+
+@app.route("/application-readiness", methods=["GET", "POST"])
+@login_required
+def application_readiness():
+
+    if request.method == "GET":
+        return render_template("application_readiness.html")
+
+    job_title = request.form.get("job_title", "").strip()
+    company = request.form.get("company", "").strip()
+    cv = request.form.get("cv", "").strip()
+    job_description = request.form.get("job_description", "").strip()
+
+    if not cv or not job_description:
+        return render_template(
+            "application_readiness.html",
+            error="Please complete every field."
+        )
+
+    cv_score, breakdown = score_cv(cv)
+
+    job_match_score, matching_keywords, missing_keywords = calculate_job_match(
+        cv,
+        job_description,
+    )
+
+    evidence_score = calculate_evidence_score(cv)
+
+    readiness_score = calculate_readiness_score(
+        cv_score,
+        job_match_score,
+        evidence_score,
+    )
+
+    status = get_readiness_status(readiness_score)
+
+    return render_template(
+        "application_results.html",
+        job_title=job_title,
+        company=company,
+        cv_score=cv_score,
+        job_match_score=job_match_score,
+        evidence_score=evidence_score,
+        readiness_score=readiness_score,
+        status=status,
+        matching_keywords=matching_keywords,
+        missing_keywords=missing_keywords,
+        breakdown=breakdown,
+    )
+
+@app.route("/rewrite", methods=["GET", "POST"])
+@login_required
+def rewrite():
+
+    if request.method == "GET":
+        return render_template("rewrite.html")
+
+    cv = request.form.get("cv", "").strip()
+
+    if not cv:
+        return render_template(
+            "rewrite.html",
+            error="Please paste your CV."
+        )
+
+    improved = improve_cv(cv)
+
+    improved = markdown.markdown(
+        improved,
+        extensions=["extra"]
+    )
+
+    return render_template(
+        "rewrite_results.html",
+        improved=improved
+    )
+@app.route("/application-builder", methods=["GET", "POST"])
+@login_required
+def application_builder():
+
+    if request.method == "GET":
+        return render_template("application_builder.html")
+
+    job_title = request.form.get("job_title", "").strip()
+    company = request.form.get("company", "").strip()
+    cv = request.form.get("cv", "").strip()
+    job_description = request.form.get("job_description", "").strip()
+
+    if not cv or not job_description:
+        return render_template(
+            "application_builder.html",
+            error="Please complete every field."
+        )
+
+    # CV Score
+    cv_score, breakdown = score_cv(cv)
+
+    # Job Match
+    job_match_score, matching_keywords, missing_keywords = calculate_job_match(
+        cv,
+        job_description,
+    )
+
+    # Evidence
+    evidence_score = calculate_evidence_score(cv)
+
+    # Readiness
+    readiness_score = calculate_readiness_score(
+        cv_score,
+        job_match_score,
+        evidence_score,
+    )
+
+    status = get_readiness_status(readiness_score)
+
+    # Rewrite
+    rewritten_cv = improve_cv(cv)
+
+    rewritten_cv = markdown.markdown(
+        rewritten_cv,
+        extensions=["extra"]
+    )
+
+    return render_template(
+        "application_builder_results.html",
+        job_title=job_title,
+        company=company,
+        cv_score=cv_score,
+        job_match_score=job_match_score,
+        evidence_score=evidence_score,
+        readiness_score=readiness_score,
+        status=status,
+        matching_keywords=matching_keywords,
+        missing_keywords=missing_keywords,
+        rewritten_cv=rewritten_cv,
+        breakdown=breakdown,
+    )    
+@app.route("/interview", methods=["GET", "POST"])
+@login_required
+def interview():
+    if request.method == "GET":
+        return render_template("interview.html")
+
+    job_title = request.form.get("job_title", "").strip()
+    company = request.form.get("company", "").strip()
+    cv = request.form.get("cv", "").strip()
+
+    if not job_title or not company or not cv:
+        return render_template(
+            "interview.html",
+            error="Please complete every field.",
+        )
+
+    prompt = f"""
+You are a professional interviewer.
+
+Generate one realistic interview question for this role.
+
+Job title: {job_title}
+Company: {company}
+
+Candidate CV or experience:
+{cv}
+
+Return only the question.
+"""
+
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            max_tokens=180,
+        )
+
+        question = response.choices[0].message.content.strip()
+
+    except Exception:
+        return render_template(
+            "interview.html",
+            error="The AI is temporarily unavailable. Please try again.",
+        )
+
+    return render_template(
+        "interview_question.html",
+        job_title=job_title,
+        company=company,
+        cv=cv,
+        question=question,
+    )
+
+
+@app.route("/interview-feedback", methods=["POST"])
+@login_required
+def interview_feedback():
+    job_title = request.form.get("job_title", "").strip()
+    company = request.form.get("company", "").strip()
+    cv = request.form.get("cv", "").strip()
+    question = request.form.get("question", "").strip()
+    answer = request.form.get("answer", "").strip()
+
+    if not answer:
+        return redirect(url_for("interview"))
+
+    prompt = f"""
+You are an expert interview coach.
+
+Evaluate the candidate's answer honestly.
+
+Role: {job_title}
+Company: {company}
+
+Candidate background:
+{cv}
+
+Question:
+{question}
+
+Candidate answer:
+{answer}
+
+Use exactly these headings:
+
+# Overall Score
+Give a score out of 100.
+
+# What Was Strong
+Give three bullet points.
+
+# What Needs Improvement
+Give three bullet points.
+
+# Better Structure
+Show how the answer could be structured using STAR where appropriate.
+
+# Improved Example Answer
+Write a stronger answer without inventing experience.
+
+# Final Coaching Advice
+Give one short paragraph.
+"""
+
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            max_tokens=850,
+        )
+
+        feedback = markdown.markdown(
+            response.choices[0].message.content,
+            extensions=["extra"],
+        )
+
+    except Exception:
+        feedback = """
+<h2>AI is temporarily unavailable.</h2>
+<p>Please wait a few seconds and try again.</p>
+"""
+
+    return render_template(
+        "interview_feedback.html",
+        feedback=feedback,
+    )
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+
     app.run(debug=True)

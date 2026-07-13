@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In | AI Career Coach</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+<nav>
+    <h2>🤖 AI Career Coach</h2>
+
+    <div>
+        <a href="/">Home</a>
+        <a href="/register">Create Account</a>
+    </div>
+</nav>
+
+<section class="auth-section">
+    <div class="auth-card">
+        <span class="badge">Welcome back</span>
+
+        <h1>Log in to your account</h1>
+
+        <p>Continue improving your CV and career preparation.</p>
+
+        {% if error %}
+            <div class="form-error">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            <label>Email address</label>
+            <input
+                type="email"
+                name="email"
+                autocomplete="email"
+                required
+            >
+
+            <label>Password</label>
+            <input
+                type="password"
+                name="password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button type="submit">
+                Log In
+            </button>
+        </form>
+
+        <p class="auth-link">
+            No account yet?
+            <a href="/register">Create one</a>
+        </p>
+    </div>
+</section>
+
+</body>
+</html>

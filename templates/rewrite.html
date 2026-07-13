@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CV Rewriter | AI Career Coach</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="logo">
+        <i class="fa-solid fa-briefcase"></i>
+        AI Career Coach
+    </div>
+
+    <div class="nav-links">
+        <a href="/dashboard">
+            <i class="fa-solid fa-house"></i>
+            Dashboard
+        </a>
+
+        <a href="/cv-review">
+            <i class="fa-solid fa-file"></i>
+            CV Review
+        </a>
+
+        <a href="/job-match">
+            <i class="fa-solid fa-bullseye"></i>
+            Job Match
+        </a>
+
+        <a href="/application-readiness">
+            <i class="fa-solid fa-chart-line"></i>
+            Readiness
+        </a>
+
+        <a href="/history">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            History
+        </a>
+
+        <a href="/logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+        </a>
+    </div>
+</nav>
+
+<section class="landing-hero">
+    <div class="landing-left">
+        <span class="badge">AI CV Rewriter</span>
+
+        <h1>Improve weak CV wording</h1>
+
+        <p>
+            Paste your CV below. The AI will improve the wording without inventing
+            qualifications, experience, skills, or achievements.
+        </p>
+    </div>
+
+    <div class="landing-right">
+        <div class="premium-card">
+            <h3>What you will receive</h3>
+
+            <div class="mini-row">
+                <span>Original wording</span>
+                <strong>✓</strong>
+            </div>
+
+            <div class="mini-row">
+                <span>Improved version</span>
+                <strong>✓</strong>
+            </div>
+
+            <div class="mini-row">
+                <span>Why it is better</span>
+                <strong>✓</strong>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="form-section">
+
+    <h1>Rewrite Your CV</h1>
+
+    {% if error %}
+        <div class="form-error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="POST">
+        <label>Your CV</label>
+
+        <textarea
+            name="cv"
+            placeholder="Paste your CV here..."
+            required
+        ></textarea>
+
+        <button type="submit">
+            Rewrite My CV →
+        </button>
+    </form>
+
+</section>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

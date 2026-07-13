@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Match Results | AI Career Coach</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+<nav>
+    <h2>🤖 AI Career Coach</h2>
+
+    <div>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/job-match">New Job Match</a>
+        <a href="/logout">Log Out</a>
+    </div>
+</nav>
+
+<section class="landing-hero">
+    <div class="landing-left">
+        <span class="badge">Job Match Complete</span>
+
+        <h1>Your job-match report</h1>
+
+        <p>
+            Use these findings to tailor your CV honestly and improve its
+            relevance to the role.
+        </p>
+
+        <a href="/job-match">
+            <button>Analyse Another Role →</button>
+        </a>
+    </div>
+</section>
+
+<section class="form-section">
+    <div class="feedback-box">
+        {{ match_feedback | safe }}
+    </div>
+</section>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

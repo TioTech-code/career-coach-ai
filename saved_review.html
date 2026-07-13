@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Review | AI Career Coach</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+<nav>
+    <h2>🤖 AI Career Coach</h2>
+
+    <div>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/history">Review History</a>
+        <a href="/logout">Log Out</a>
+    </div>
+</nav>
+
+<section class="form-section">
+    <span class="badge">Saved CV Review</span>
+
+    <div class="score-dashboard">
+        <div class="score-circle">
+            {{ review.score }}
+        </div>
+
+        <h1>{{ review.score }}/100</h1>
+
+        <p>
+            Reviewed on
+            {{ review.created_at.strftime("%d %B %Y at %H:%M") }}
+        </p>
+    </div>
+
+    <div class="feedback-box">
+        {{ review.feedback | safe }}
+    </div>
+
+    <a href="/history">
+        <button>← Back to History</button>
+    </a>
+</section>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

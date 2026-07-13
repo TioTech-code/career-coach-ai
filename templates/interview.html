@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Interview Simulator | AI Career Coach</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">
+        <i class="fa-solid fa-briefcase"></i>
+        AI Career Coach
+    </div>
+
+    <div class="nav-links">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/application-builder">Application Builder</a>
+        <a href="/logout">Log Out</a>
+    </div>
+</nav>
+
+<section class="form-section">
+    <span class="badge">AI Mock Interview</span>
+
+    <h1>Practise for your interview</h1>
+
+    <p>
+        Enter the role and company. The AI will generate a realistic interview question.
+    </p>
+
+    {% if error %}
+        <div class="form-error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="POST">
+        <label>Job title</label>
+        <input
+            type="text"
+            name="job_title"
+            placeholder="Software Engineer"
+            required
+        >
+
+        <label>Company</label>
+        <input
+            type="text"
+            name="company"
+            placeholder="Google"
+            required
+        >
+
+        <label>Your CV or experience summary</label>
+        <textarea
+            name="cv"
+            placeholder="Paste your CV or briefly describe your experience..."
+            required
+        ></textarea>
+
+        <button type="submit">
+            Start Interview →
+        </button>
+    </form>
+</section>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="form-section">
+
+    <h1>Create Your Account</h1>
+    {% if error %}
+    <div class="form-error">
+        {{ error }}
+    </div>
+{% endif %}
+<input
+    type="password"
+    name="password"
+    minlength="8"
+    required
+>
+
+    <form method="POST">
+
+        <label>Name</label>
+        <input
+            type="text"
+            name="name"
+            required
+        >
+
+        <label>Email</label>
+        <input
+            type="email"
+            name="email"
+            required
+        >
+
+        <label>Password</label>
+        <input
+            type="password"
+            name="password"
+            required
+        >
+
+        <button type="submit">
+            Create Account
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

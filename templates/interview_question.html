@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Question | AI Career Coach</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">
+        <i class="fa-solid fa-briefcase"></i>
+        AI Career Coach
+    </div>
+
+    <div class="nav-links">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/interview">New Interview</a>
+        <a href="/logout">Log Out</a>
+    </div>
+</nav>
+
+<section class="form-section">
+    <span class="badge">Interview Question</span>
+
+    <h1>{{ job_title }} at {{ company }}</h1>
+
+    <div class="feedback-box">
+        <h2>{{ question }}</h2>
+    </div>
+
+    <form action="/interview-feedback" method="POST">
+        <input type="hidden" name="job_title" value="{{ job_title }}">
+        <input type="hidden" name="company" value="{{ company }}">
+        <input type="hidden" name="cv" value="{{ cv }}">
+        <input type="hidden" name="question" value="{{ question }}">
+
+        <label>Your answer</label>
+
+        <textarea
+            name="answer"
+            placeholder="Type your answer here..."
+            required
+        ></textarea>
+
+        <button type="submit">
+            Score My Answer →
+        </button>
+    </form>
+</section>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

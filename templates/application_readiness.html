@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Readiness | AI Career Coach</title>
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<nav>
+    <h2>🤖 AI Career Coach</h2>
+
+    <div>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/history">History</a>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
+
+<section class="form-section">
+
+<h1>Application Readiness Report</h1>
+
+<p>
+Analyse your entire application before you apply.
+</p>
+
+<form method="POST">
+
+<label>Job Title</label>
+
+<input
+type="text"
+name="job_title"
+placeholder="Software Engineer"
+required>
+
+<label>Company Name</label>
+
+<input
+type="text"
+name="company"
+placeholder="Google"
+required>
+
+<label>Your CV</label>
+
+<textarea
+name="cv"
+rows="12"
+required></textarea>
+
+<label>Job Description</label>
+
+<textarea
+name="job_description"
+rows="12"
+required></textarea>
+
+<button>
+
+Generate Report →
+
+</button>
+
+</form>
+
+</section>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

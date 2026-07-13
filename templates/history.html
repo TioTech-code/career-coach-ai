@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review History | AI Career Coach</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+<nav>
+    <h2>🤖 AI Career Coach</h2>
+
+    <div>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/cv-review">CV Review</a>
+        <a href="/logout">Log Out</a>
+    </div>
+</nav>
+
+<section class="form-section">
+    <span class="badge">Saved Reviews</span>
+
+    <h1>Your Review History</h1>
+
+    {% if reviews %}
+
+        {% for review in reviews %}
+            <div class="history-card">
+                <div class="history-card-header">
+                    <div>
+                        <h2>{{ review.score }}/100</h2>
+                        <p>
+                            {{ review.created_at.strftime("%d %B %Y at %H:%M") }}
+                        </p>
+                    </div>
+
+                    <span class="history-score">
+                        {{ review.score }}
+                    </span>
+                </div>
+
+              <a href="{{ url_for('view_review', review_id=review.id) }}">
+    <button>View Review →</button>
+</a>
+            </div>
+        {% endfor %}
+
+    {% else %}
+        <div class="history-card">
+            <h2>No reviews yet</h2>
+            <p>Analyse your first CV to see it saved here.</p>
+
+            <a href="/cv-review">
+                <button>Review a CV →</button>
+            </a>
+        </div>
+    {% endif %}
+</section>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

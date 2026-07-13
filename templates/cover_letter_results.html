@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Cover Letter</title>
+
+<link
+rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<nav>
+
+<h2>🤖 AI Career Coach</h2>
+
+<div>
+
+<a href="/dashboard">Dashboard</a>
+
+<a href="/cover-letter">New Letter</a>
+
+<a href="/logout">Logout</a>
+
+</div>
+
+</nav>
+
+<section class="form-section">
+
+<h1>Your AI Cover Letter</h1>
+
+<div class="feedback-box">
+
+{{ letter|safe }}
+
+</div>
+
+<a href="/cover-letter">
+
+<button>
+
+Generate Another →
+
+</button>
+
+</a>
+
+</section>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>
