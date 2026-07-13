@@ -7,12 +7,17 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet"
     >
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='style.css') }}"
@@ -22,21 +27,19 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 <body>
 
 <nav class="navbar">
-
     <div class="logo">
         <i class="fa-solid fa-briefcase"></i>
         AI Career Coach
     </div>
 
     <div class="nav-links">
-
         <a href="/dashboard">
             <i class="fa-solid fa-house"></i>
             Dashboard
         </a>
 
         <a href="/cv-review">
-            <i class="fa-solid fa-file"></i>
+            <i class="fa-solid fa-file-lines"></i>
             CV Review
         </a>
 
@@ -50,6 +53,11 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
             Readiness
         </a>
 
+        <a href="/jobs">
+            <i class="fa-solid fa-briefcase"></i>
+            Job Tracker
+        </a>
+
         <a href="/history">
             <i class="fa-solid fa-clock-rotate-left"></i>
             History
@@ -59,202 +67,229 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
             <i class="fa-solid fa-right-from-bracket"></i>
             Logout
         </a>
-
     </div>
-
 </nav>
 
-<section class="landing-hero">
-    <div class="landing-left">
-        <span class="badge">Career Dashboard</span>
+<main>
 
-        <h1>Welcome, {{ user.name }} 👋</h1>
+    <section class="landing-hero">
+        <div class="landing-left">
+            <span class="badge">Career Dashboard</span>
 
-        <p>
-            Track your CV progress, review previous results, and use your
-            career tools from one dashboard.
-        </p>
+            <h1>Welcome, {{ user.name }} 👋</h1>
 
-        <div class="hero-buttons">
-            <a href="/cv-review">
-                <button>Review a CV →</button>
-            </a>
+            <p>
+                Track your CV progress, manage job applications, and use all
+                your career tools from one dashboard.
+            </p>
 
-            <a href="/history">
-                <button class="secondary-btn">View History</button>
-            </a>
+            <div class="hero-buttons">
+                <a href="/application-builder">
+                    <button>Build My Application →</button>
+                </a>
+
+                <a href="/jobs">
+                    <button class="secondary-btn">
+                        Open Job Tracker
+                    </button>
+                </a>
+            </div>
         </div>
-    </div>
 
-    <div class="landing-right">
-        <div class="premium-card">
-            <h3>Latest CV Score</h3>
+        <div class="landing-right">
+            <div class="premium-card">
+                <h3>Latest CV Score</h3>
 
-            <div class="big-score">
+                <div class="big-score">
+                    {% if latest_score is not none %}
+                        {{ latest_score }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+
+                <p>
+                    {% if latest_score is not none %}
+                        Your most recent score out of 100
+                    {% else %}
+                        Review your first CV to see a score
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="dashboard-stats">
+
+        <div class="stat-card">
+            <p>Latest Score</p>
+            <h2>
                 {% if latest_score is not none %}
-                    {{ latest_score }}
+                    {{ latest_score }}/100
                 {% else %}
                     —
                 {% endif %}
-            </div>
-
-            <p>
-                {% if latest_score is not none %}
-                    Your most recent score out of 100
-                {% else %}
-                    Review your first CV to see a score
-                {% endif %}
-            </p>
+            </h2>
         </div>
-    </div>
-</section>
 
-<section class="dashboard-stats">
+        <div class="stat-card">
+            <p>Total Reviews</p>
+            <h2>{{ total_reviews }}</h2>
+        </div>
 
-    <div class="stat-card">
-        <p>Latest Score</p>
-
-        <h2>
-            {% if latest_score is not none %}
-                {{ latest_score }}/100
-            {% else %}
-                —
-            {% endif %}
-        </h2>
-    </div>
-
-    <div class="stat-card">
-        <p>Total Reviews</p>
-        <h2>{{ total_reviews }}</h2>
-    </div>
-
-    <div class="stat-card">
-        <p>Average Score</p>
-
-        <h2>
-            {% if average_score is not none %}
-                {{ average_score }}/100
-            {% else %}
-                —
-            {% endif %}
-        </h2>
-    </div>
-
-    <div class="stat-card">
-        <p>Best Score</p>
-
-        <h2>
-            {% if best_score is not none %}
-                {{ best_score }}/100
-            {% else %}
-                —
-            {% endif %}
-        </h2>
-    </div>
-
-    <div class="stat-card">
-        <p>Latest Change</p>
-
-        <h2>
-            {% if improvement is not none %}
-                {% if improvement > 0 %}
-                    +{{ improvement }}
+        <div class="stat-card">
+            <p>Average Score</p>
+            <h2>
+                {% if average_score is not none %}
+                    {{ average_score }}/100
                 {% else %}
-                    {{ improvement }}
+                    —
                 {% endif %}
-            {% else %}
-                —
-            {% endif %}
-        </h2>
-    </div>
+            </h2>
+        </div>
 
-</section>
+        <div class="stat-card">
+            <p>Best Score</p>
+            <h2>
+                {% if best_score is not none %}
+                    {{ best_score }}/100
+                {% else %}
+                    —
+                {% endif %}
+            </h2>
+        </div>
 
-<section class="cards"
-<div class="card">
-    <h3>🚀 Application Builder</h3>
-
-    <p>
-        Build a complete job application report with CV scoring,
-        job matching, missing keywords, readiness analysis, and CV rewriting.
-    </p>
-
-    <a href="/application-builder">
-        <button>Build My Application →</button>
-    </a>
-</div>>
-
-    <div class="card">
-        <h3>📄 AI CV Review</h3>
-
-        <p>
-            Upload or paste your CV and receive personalised feedback,
-            scoring, strengths, improvements, and interview questions.
-        </p>
-
-        <a href="/cv-review">
-            <button>Start Review →</button>
-       <div class="card">
-
-    <h3>✉️ AI Cover Letter</h3>
-
-    <p>
-        Generate a personalised cover letter using your CV and the job description.
-    </p>
-
-    <a href="/cover-letter">
-        <button>Generate →</button>
-    </a>
-
-</div>
-       
-        </a>
-    </div>
+        <div class="stat-card">
+            <p>Latest Change</p>
+            <h2>
+                {% if improvement is not none %}
+                    {% if improvement > 0 %}
+                        +{{ improvement }}
+                    {% else %}
+                        {{ improvement }}
+                    {% endif %}
+                {% else %}
+                    —
+                {% endif %}
+            </h2>
+        </div>
 
     </section>
 
-    <div class="card">
-        <h3>📚 Review History</h3>
+    <section class="cards">
 
-        <p>
-            View your saved CV reviews and track how your scores improve
-            over time.
-        </p>
+        <div class="card">
+            <h3>🚀 Application Builder</h3>
 
-        <a href="/history">
-            <button>View History →</button>
-        </a>
-    </div>
+            <p>
+                Build a complete application report with CV scoring, job matching,
+                readiness analysis, missing keywords, and CV rewriting.
+            </p>
 
-    <div class="card">
-        <h3>🎯 Job Match</h3>
+            <a href="/application-builder">
+                <button>Build My Application →</button>
+            </a>
+        </div>
 
-        <p>
-            Compare your CV against a job description and identify missing
-            skills and keywords.
-        </p>
+        <div class="card">
+            <h3>📄 AI CV Review</h3>
 
-       <a href="/job-match">
-    <button>Start Job Match →</button>
-</a>
-    </div>
+            <p>
+                Upload or paste your CV and receive personalised feedback,
+                strengths, improvements, and interview questions.
+            </p>
 
-    <div class="card">
-        <h3>✉️ Cover Letter Generator</h3>
+            <a href="/cv-review">
+                <button>Start Review →</button>
+            </a>
+        </div>
 
-        <p>
-            Generate a tailored cover letter using your CV and the role
-            you are applying for.
-        </p>
+        <div class="card">
+            <h3>🎯 Job Match</h3>
 
-        <button disabled>Coming Soon</button>
-    </div>
+            <p>
+                Compare your CV with a job description and identify missing
+                skills and ATS keywords.
+            </p>
 
-</section>
+            <a href="/job-match">
+                <button>Start Job Match →</button>
+            </a>
+        </div>
+
+        <div class="card">
+            <h3>✉️ AI Cover Letter</h3>
+
+            <p>
+                Generate a personalised cover letter using your CV and the
+                job description.
+            </p>
+
+            <a href="/cover-letter">
+                <button>Generate Cover Letter →</button>
+            </a>
+        </div>
+
+        <div class="card">
+            <h3>📝 CV Rewriter</h3>
+
+            <p>
+                Improve weak CV wording without inventing qualifications,
+                skills, or experience.
+            </p>
+
+            <a href="/rewrite">
+                <button>Rewrite My CV →</button>
+            </a>
+        </div>
+
+        <div class="card">
+            <h3>🎤 AI Interview Simulator</h3>
+
+            <p>
+                Practise realistic interview questions and receive detailed
+                coaching.
+            </p>
+
+            <a href="/interview">
+                <button>Start Interview →</button>
+            </a>
+        </div>
+
+        <div class="card">
+            <h3>📚 Review History</h3>
+
+            <p>
+                View saved CV reviews and track how your scores improve over time.
+            </p>
+
+            <a href="/history">
+                <button>View History →</button>
+            </a>
+        </div>
+
+        <div class="card">
+            <h3>💼 Job Tracker</h3>
+
+            <p>
+                Save jobs and track them from saved to applied, interview,
+                offer, or rejection.
+            </p>
+
+            <a href="/jobs">
+                <button>Open Job Tracker →</button>
+            </a>
+        </div>
+
+    </section>
+
+</main>
 
 <footer>
     <p>© 2026 AI Career Coach • Dashboard</p>
 </footer>
+
 <script src="{{ url_for('static', filename='script.js') }}"></script>
+
 </body>
 </html>
