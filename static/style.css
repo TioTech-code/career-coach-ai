@@ -1239,3 +1239,11 @@ transform:rotate(360deg);
 }
 
 }
+.danger-button {
+    margin-top: 12px;
+    background: #dc2626;
+}
+
+.danger-button:hover {
+    background: #b91c1c;
+}

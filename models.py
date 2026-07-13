@@ -52,3 +52,53 @@ class Review(db.Model):
         db.ForeignKey("user.id"),
         nullable=False,
     )
+
+
+class JobApplication(db.Model):
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+    )
+
+    job_title = db.Column(
+        db.String(150),
+        nullable=False,
+    )
+
+    company = db.Column(
+        db.String(150),
+        nullable=False,
+    )
+
+    status = db.Column(
+        db.String(50),
+        default="Saved",
+        nullable=False,
+    )
+
+    job_url = db.Column(
+        db.String(500),
+        nullable=True,
+    )
+
+    notes = db.Column(
+        db.Text,
+        nullable=True,
+    )
+
+    applied_at = db.Column(
+        db.DateTime,
+        nullable=True,
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=db.func.current_timestamp(),
+        nullable=False,
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False,
+    )

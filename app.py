@@ -15,7 +15,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from config import Config
 from extensions import db, login_manager
-from models import User, Review
+from models import User, Review, JobApplication
 
 from services.scoring import score_cv
 from services.rewriter import improve_cv
@@ -729,6 +729,78 @@ Give one short paragraph.
         "interview_feedback.html",
         feedback=feedback,
     )
+@app.route("/jobs", methods=["GET", "POST"])
+@login_required
+def jobs():
+    if request.method == "POST":
+        job_title = request.form.get("job_title", "").strip()
+        company = request.form.get("company", "").strip()
+        job_url = request.form.get("job_url", "").strip()
+        notes = request.form.get("notes", "").strip()
+
+        if job_title and company:
+            application = JobApplication(
+                job_title=job_title,
+                company=company,
+                job_url=job_url or None,
+                notes=notes or None,
+                user_id=current_user.id,
+            )
+
+            db.session.add(application)
+            db.session.commit()
+
+            return redirect(url_for("jobs"))
+
+    applications = (
+        JobApplication.query
+        .filter_by(user_id=current_user.id)
+        .order_by(JobApplication.created_at.desc())
+        .all()
+    )
+
+    return render_template(
+        "jobs.html",
+        applications=applications,
+    )
+
+
+@app.route("/jobs/<int:job_id>/status", methods=["POST"])
+@login_required
+def update_job_status(job_id):
+    application = JobApplication.query.filter_by(
+        id=job_id,
+        user_id=current_user.id,
+    ).first_or_404()
+
+    allowed_statuses = {
+        "Saved",
+        "Applied",
+        "Interview",
+        "Offer",
+        "Rejected",
+    }
+
+    new_status = request.form.get("status", "")
+
+    if new_status in allowed_statuses:
+        application.status = new_status
+        db.session.commit()
+
+    return redirect(url_for("jobs"))
+
+@app.route("/jobs/<int:job_id>/delete", methods=["POST"])
+@login_required
+def delete_job(job_id):
+    application = JobApplication.query.filter_by(
+        id=job_id,
+        user_id=current_user.id,
+    ).first_or_404()
+
+    db.session.delete(application)
+    db.session.commit()
+
+    return redirect(url_for("jobs"))
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

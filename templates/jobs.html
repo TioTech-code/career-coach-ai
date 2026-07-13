@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Tracker | AI Career Coach</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">AI Career Coach</div>
+
+    <div class="nav-links">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/jobs">Job Tracker</a>
+        <a href="/logout">Log Out</a>
+    </div>
+</nav>
+
+<section class="form-section">
+    <span class="badge">Job Tracker</span>
+    <h1>Track your applications</h1>
+
+    <form method="POST">
+        <label>Job title</label>
+        <input type="text" name="job_title" required>
+
+        <label>Company</label>
+        <input type="text" name="company" required>
+
+        <label>Job link</label>
+        <input type="url" name="job_url">
+
+        <label>Notes</label>
+        <textarea name="notes"></textarea>
+
+        <button type="submit">Add Job →</button>
+    </form>
+</section>
+
+<section class="cards">
+
+    {% if applications %}
+        {% for application in applications %}
+            <div class="card">
+                <h3>{{ application.job_title }}</h3>
+                <p>{{ application.company }}</p>
+                <p>Status: <strong>{{ application.status }}</strong></p>
+
+                {% if application.job_url %}
+                    <p>
+                        <a href="{{ application.job_url }}"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            Open job advert
+                        </a>
+                    </p>
+                {% endif %}
+
+                {% if application.notes %}
+                    <p>{{ application.notes }}</p>
+                {% endif %}
+
+                <form
+                    method="POST"
+                    action="{{ url_for('update_job_status', job_id=application.id) }}"
+                >
+                    <label>Update status</label>
+
+                    <select name="status">
+                        {% for status in ["Saved", "Applied", "Interview", "Offer", "Rejected"] %}
+                            <option
+                                value="{{ status }}"
+                                {% if application.status == status %}selected{% endif %}
+                            >
+                                {{ status }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit">Update</button>
+                </form>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="card">
+            <h3>No jobs tracked yet</h3>
+            <p>Add your first application above.</p>
+        </div>
+    {% endif %}
+
+</section>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
