@@ -30,5 +30,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run tests
-        run: |
-          pytest
+  env:
+    DATABASE_URL: sqlite:///test.db
+    SECRET_KEY: test-secret-key
+    GROQ_API_KEY: test-groq-key
+  run: |
+    pytest
