@@ -71,10 +71,36 @@ def dashboard():
         .all()
     )
 
+    applications = JobApplication.query.filter_by(
+        user_id=current_user.id
+    ).all()
+
     total_reviews = len(reviews)
+    total_applications = len(applications)
+
+    status_counts = {
+        "Saved": 0,
+        "Applied": 0,
+        "Interview": 0,
+        "Offer": 0,
+        "Rejected": 0,
+    }
+
+    for application in applications:
+        if application.status in status_counts:
+            status_counts[application.status] += 1
+
+    applied_count = status_counts["Applied"]
+    interview_count = status_counts["Interview"]
+    offer_count = status_counts["Offer"]
 
     if reviews:
         scores = [review.score for review in reviews]
+
+        score_labels = [
+            review.created_at.strftime("%d %b")
+            for review in reviews
+        ]
 
         latest_score = scores[-1]
         previous_score = scores[-2] if len(scores) > 1 else None
@@ -86,7 +112,10 @@ def dashboard():
             if previous_score is not None
             else None
         )
+
     else:
+        scores = []
+        score_labels = []
         latest_score = None
         previous_score = None
         best_score = None
@@ -102,8 +131,15 @@ def dashboard():
         best_score=best_score,
         average_score=average_score,
         improvement=improvement,
+        total_applications=total_applications,
+        applied_count=applied_count,
+        interview_count=interview_count,
+        offer_count=offer_count,
+        score_labels=score_labels,
+        score_values=scores,
+        job_status_labels=list(status_counts.keys()),
+        job_status_values=list(status_counts.values()),
     )
-
 
 @app.route("/cv-review")
 @login_required
@@ -804,6 +840,109 @@ def delete_job(job_id):
     db.session.commit()
 
     return redirect(url_for("jobs"))
+
+@app.route("/recruiter-review", methods=["GET", "POST"])
+@login_required
+def recruiter_review():
+    if request.method == "GET":
+        return render_template("recruiter_review.html")
+
+    job_title = request.form.get("job_title", "").strip()
+    company = request.form.get("company", "").strip()
+    cv = request.form.get("cv", "").strip()
+    job_description = request.form.get("job_description", "").strip()
+
+    if not job_title or not company or not cv or not job_description:
+        return render_template(
+            "recruiter_review.html",
+            error="Please complete every field.",
+        )
+
+    prompt = f"""
+You are a senior UK recruiter reviewing a real job application.
+
+Assess the candidate honestly using only the evidence in their CV.
+Do not invent experience, qualifications, skills, achievements, or outcomes.
+Do not guarantee that the candidate will receive an interview.
+
+Job title:
+{job_title}
+
+Company:
+{company}
+
+Candidate CV:
+{cv}
+
+Job description:
+{job_description}
+
+Use exactly these headings:
+
+# Recruiter's Decision
+Choose one:
+- Invite to Interview
+- Possible Interview
+- Unlikely to Interview
+
+Give a short explanation.
+
+# Confidence
+Give a percentage from 0 to 100 showing confidence in your assessment.
+
+# First Impression
+Explain what a recruiter would notice during an initial scan.
+
+# Strongest Evidence
+Give four bullet points grounded in the CV.
+
+# Main Concerns
+Give four bullet points.
+
+# ATS and Keyword Fit
+Explain how well the CV matches the vacancy and identify important missing keywords.
+
+# Questions I Would Ask
+Generate five realistic interview questions.
+
+# Changes Before Applying
+Give five specific and honest changes.
+
+# Recruiter's Notes
+Write a short note as though it were being sent to the hiring manager.
+
+Finish by clearly stating that this is AI guidance, not a hiring guarantee.
+"""
+
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            max_tokens=1100,
+        )
+
+        recruiter_feedback = markdown.markdown(
+            response.choices[0].message.content,
+            extensions=["extra"],
+        )
+
+    except Exception:
+        recruiter_feedback = """
+<h2>AI is temporarily unavailable.</h2>
+<p>Please wait a few seconds and try again.</p>
+"""
+
+    return render_template(
+        "recruiter_results.html",
+        recruiter_feedback=recruiter_feedback,
+        job_title=job_title,
+        company=company,
+    )
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
