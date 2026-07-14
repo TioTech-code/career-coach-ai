@@ -11,11 +11,9 @@ on:
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -30,9 +28,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run tests
-  env:
-    DATABASE_URL: sqlite:///test.db
-    SECRET_KEY: test-secret-key
-    GROQ_API_KEY: test-groq-key
-  run: |
-    pytest
+        env:
+          DATABASE_URL: sqlite:///test.db
+          SECRET_KEY: test-secret-key
+          GROQ_API_KEY: test-groq-key
+        run: |
+          pytest
