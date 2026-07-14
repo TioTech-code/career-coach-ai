@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruiter Review Results | AI Career Coach</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="logo">
+        <i class="fa-solid fa-briefcase"></i>
+        AI Career Coach
+    </div>
+
+    <div class="nav-links">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/recruiter-review">New Review</a>
+        <a href="/logout">Log Out</a>
+    </div>
+</nav>
+
+<section class="landing-hero">
+    <div class="landing-left">
+        <span class="badge">Recruiter Review Complete</span>
+
+        <h1>{{ job_title }}</h1>
+
+        <p>
+            Recruiter-style assessment for {{ company }}.
+        </p>
+
+        <a href="/recruiter-review">
+            <button>Review Another Application →</button>
+        </a>
+    </div>
+</section>
+
+<section class="form-section">
+    <div class="feedback-box" id="recruiterResults">
+        {{ recruiter_feedback | safe }}
+    </div>
+
+    <button type="button" onclick="copyRecruiterReview()">
+        <i class="fa-solid fa-copy"></i>
+        Copy Review
+    </button>
+</section>
+
+<script>
+function copyRecruiterReview() {
+    const results = document.getElementById("recruiterResults");
+
+    navigator.clipboard.writeText(results.innerText)
+        .then(() => alert("Recruiter review copied."))
+        .catch(() => alert("Please copy the review manually."));
+}
+</script>
+
+</body>
+</html>

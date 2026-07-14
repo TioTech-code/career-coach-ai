@@ -5,92 +5,207 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Tracker | AI Career Coach</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
 </head>
+
 <body>
 
 <nav class="navbar">
-    <div class="logo">AI Career Coach</div>
+    <div class="logo">
+        <i class="fa-solid fa-briefcase"></i>
+        AI Career Coach
+    </div>
 
     <div class="nav-links">
         <a href="/dashboard">Dashboard</a>
+        <a href="/application-builder">Application Builder</a>
         <a href="/jobs">Job Tracker</a>
         <a href="/logout">Log Out</a>
     </div>
 </nav>
 
-<section class="form-section">
-    <span class="badge">Job Tracker</span>
-    <h1>Track your applications</h1>
+<section class="job-tracker-hero">
+    <div>
+        <span class="badge">Job Application Tracker</span>
+        <h1>Manage every application</h1>
+        <p>
+            Track jobs from saved opportunities through to interviews and offers.
+        </p>
+    </div>
+
+    <a href="#add-job">
+        <button>
+            <i class="fa-solid fa-plus"></i>
+            Add New Job
+        </button>
+    </a>
+</section>
+
+<section class="form-section" id="add-job">
+    <h2>Add a job</h2>
 
     <form method="POST">
         <label>Job title</label>
-        <input type="text" name="job_title" required>
+        <input
+            type="text"
+            name="job_title"
+            placeholder="Software Engineering Apprentice"
+            required
+        >
 
         <label>Company</label>
-        <input type="text" name="company" required>
+        <input
+            type="text"
+            name="company"
+            placeholder="BT"
+            required
+        >
 
         <label>Job link</label>
-        <input type="url" name="job_url">
+        <input
+            type="url"
+            name="job_url"
+            placeholder="https://..."
+        >
 
         <label>Notes</label>
-        <textarea name="notes"></textarea>
+        <textarea
+            name="notes"
+            placeholder="Deadline, salary, contact name, or reminders..."
+        ></textarea>
 
-        <button type="submit">Add Job →</button>
+        <button type="submit">
+            Add to Tracker →
+        </button>
     </form>
 </section>
 
-<section class="cards">
+{% set statuses = ["Saved", "Applied", "Interview", "Offer", "Rejected"] %}
 
-    {% if applications %}
-        {% for application in applications %}
-            <div class="card">
-                <h3>{{ application.job_title }}</h3>
-                <p>{{ application.company }}</p>
-                <p>Status: <strong>{{ application.status }}</strong></p>
+<section class="kanban-board">
 
-                {% if application.job_url %}
-                    <p>
-                        <a href="{{ application.job_url }}"
-                           target="_blank"
-                           rel="noopener noreferrer">
-                            Open job advert
-                        </a>
-                    </p>
-                {% endif %}
+    {% for column_status in statuses %}
+        <div class="kanban-column">
 
-                {% if application.notes %}
-                    <p>{{ application.notes }}</p>
-                {% endif %}
+            <div class="kanban-column-header">
+                <h2>{{ column_status }}</h2>
 
-                <form
-                    method="POST"
-                    action="{{ url_for('update_job_status', job_id=application.id) }}"
-                >
-                    <label>Update status</label>
-
-                    <select name="status">
-                        {% for status in ["Saved", "Applied", "Interview", "Offer", "Rejected"] %}
-                            <option
-                                value="{{ status }}"
-                                {% if application.status == status %}selected{% endif %}
-                            >
-                                {{ status }}
-                            </option>
-                        {% endfor %}
-                    </select>
-
-                    <button type="submit">Update</button>
-                </form>
+                <span>
+                    {{
+                        applications
+                        | selectattr("status", "equalto", column_status)
+                        | list
+                        | length
+                    }}
+                </span>
             </div>
-        {% endfor %}
-    {% else %}
-        <div class="card">
-            <h3>No jobs tracked yet</h3>
-            <p>Add your first application above.</p>
+
+            <div class="kanban-column-body">
+
+                {% set column_jobs =
+                    applications
+                    | selectattr("status", "equalto", column_status)
+                    | list
+                %}
+
+                {% if column_jobs %}
+                    {% for application in column_jobs %}
+
+                        <article class="job-card">
+                            <div class="job-card-top">
+                                <div>
+                                    <h3>{{ application.job_title }}</h3>
+                                    <p>{{ application.company }}</p>
+                                </div>
+
+                                <span class="job-status">
+                                    {{ application.status }}
+                                </span>
+                            </div>
+
+                            {% if application.notes %}
+                                <p class="job-notes">
+                                    {{ application.notes }}
+                                </p>
+                            {% endif %}
+
+                            {% if application.job_url %}
+                                <a
+                                    class="job-link"
+                                    href="{{ application.job_url }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                    Open Job Advert
+                                </a>
+                            {% endif %}
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('update_job_status', job_id=application.id) }}"
+                            >
+                                <label>Move to</label>
+
+                                <select name="status">
+                                    {% for status in statuses %}
+                                        <option
+                                            value="{{ status }}"
+                                            {% if application.status == status %}
+                                                selected
+                                            {% endif %}
+                                        >
+                                            {{ status }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+
+                                <button type="submit">
+                                    Update Status
+                                </button>
+                            </form>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('delete_job', job_id=application.id) }}"
+                                onsubmit="return confirm('Delete this job application?');"
+                            >
+                                <button
+                                    type="submit"
+                                    class="danger-button"
+                                >
+                                    <i class="fa-solid fa-trash"></i>
+                                    Delete
+                                </button>
+                            </form>
+                        </article>
+
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-column">
+                        <p>No applications here yet.</p>
+                    </div>
+                {% endif %}
+
+            </div>
         </div>
-    {% endif %}
+    {% endfor %}
 
 </section>
 

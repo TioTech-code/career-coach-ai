@@ -3,6 +3,21 @@ from flask_login import UserMixin
 
 
 class User(UserMixin, db.Model):
+    subscription = db.Column(
+    db.String(20),
+    default="Free",
+    nullable=False,
+)
+
+stripe_customer_id = db.Column(
+    db.String(255),
+    nullable=True,
+)
+
+stripe_subscription_id = db.Column(
+    db.String(255),
+    nullable=True,
+)
     id = db.Column(
         db.Integer,
         primary_key=True,

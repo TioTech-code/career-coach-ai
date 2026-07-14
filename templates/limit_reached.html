@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usage Limit Reached</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+<body>
+
+<section class="auth-section">
+    <div class="auth-card">
+        <span class="badge">Free Plan Limit</span>
+
+        <h1>Today’s limit has been reached</h1>
+
+        <p>{{ message }}</p>
+
+        <p>
+            Your free allowance will reset automatically.
+            Unlimited access will be available with Pro.
+        </p>
+
+        <a href="/dashboard">
+            <button>Return to Dashboard</button>
+        </a>
+    </div>
+</section>
+
+</body>
+</html>

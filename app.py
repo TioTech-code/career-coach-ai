@@ -1,3 +1,5 @@
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from flask import Flask, render_template, request, redirect, url_for
 
 from flask_login import (
@@ -32,6 +34,18 @@ import os
 load_dotenv()
 
 app = Flask(__name__)
+app.config.from_object(Config)
+def rate_limit_key():
+    if current_user.is_authenticated:
+        return f"user:{current_user.id}"
+    return get_remote_address()
+
+
+limiter = Limiter(
+    key_func=rate_limit_key,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+)
 
 app.config.from_object(Config)
 
@@ -149,6 +163,13 @@ def cv_review():
 
 @app.route("/review", methods=["POST"])
 @login_required
+@limiter.limit(
+    "3 per day",
+    exempt_when=lambda: (
+        current_user.is_authenticated
+        and current_user.subscription == "Pro"
+    ),
+)
 def review():
     cv_text = ""
 
@@ -352,6 +373,13 @@ def view_review(review_id):
 
 @app.route("/job-match", methods=["GET", "POST"])
 @login_required
+@limiter.limit(
+    "3 per day",
+    exempt_when=lambda: (
+        current_user.is_authenticated
+        and current_user.subscription == "Pro"
+    ),
+)
 def job_match():
     if request.method == "GET":
         return render_template("job_match.html")
@@ -433,6 +461,13 @@ JOB DESCRIPTION:
 
 @app.route("/cover-letter", methods=["GET", "POST"])
 @login_required
+@limiter.limit(
+    "2 per day",
+    exempt_when=lambda: (
+        current_user.is_authenticated
+        and current_user.subscription == "Pro"
+    ),
+)
 def cover_letter():
     if request.method == "GET":
         return render_template("cover_letter.html")
@@ -498,6 +533,13 @@ JOB DESCRIPTION:
 
 @app.route("/application-readiness", methods=["GET", "POST"])
 @login_required
+@limiter.limit(
+    "2 per day",
+    exempt_when=lambda: (
+        current_user.is_authenticated
+        and current_user.subscription == "Pro"
+    ),
+)
 def application_readiness():
 
     if request.method == "GET":
@@ -547,8 +589,14 @@ def application_readiness():
 
 @app.route("/rewrite", methods=["GET", "POST"])
 @login_required
+@limiter.limit(
+    "2 per day",
+    exempt_when=lambda: (
+        current_user.is_authenticated
+        and current_user.subscription == "Pro"
+    ),
+)
 def rewrite():
-
     if request.method == "GET":
         return render_template("rewrite.html")
 
@@ -573,8 +621,8 @@ def rewrite():
     )
 @app.route("/application-builder", methods=["GET", "POST"])
 @login_required
+@limiter.limit("1 per day")
 def application_builder():
-
     if request.method == "GET":
         return render_template("application_builder.html")
 
@@ -634,6 +682,13 @@ def application_builder():
     )    
 @app.route("/interview", methods=["GET", "POST"])
 @login_required
+@limiter.limit(
+    "3 per day",
+    exempt_when=lambda: (
+        current_user.is_authenticated
+        and current_user.subscription == "Pro"
+    ),
+)
 def interview():
     if request.method == "GET":
         return render_template("interview.html")
@@ -693,6 +748,13 @@ Return only the question.
 
 @app.route("/interview-feedback", methods=["POST"])
 @login_required
+@limiter.limit(
+    "3 per day",
+    exempt_when=lambda: (
+        current_user.is_authenticated
+        and current_user.subscription == "Pro"
+    ),
+)
 def interview_feedback():
     job_title = request.form.get("job_title", "").strip()
     company = request.form.get("company", "").strip()
@@ -843,6 +905,13 @@ def delete_job(job_id):
 
 @app.route("/recruiter-review", methods=["GET", "POST"])
 @login_required
+@limiter.limit(
+    "1 per day",
+    exempt_when=lambda: (
+        current_user.is_authenticated
+        and current_user.subscription == "Pro"
+    ),
+)
 def recruiter_review():
     if request.method == "GET":
         return render_template("recruiter_review.html")
@@ -937,12 +1006,22 @@ Finish by clearly stating that this is AI guidance, not a hiring guarantee.
 <p>Please wait a few seconds and try again.</p>
 """
 
-    return render_template(
+        return render_template(
         "recruiter_results.html",
         recruiter_feedback=recruiter_feedback,
         job_title=job_title,
         company=company,
     )
+
+
+@app.errorhandler(429)
+def rate_limit_reached(error):
+    return render_template(
+        "limit_reached.html",
+        message="You have reached today's free AI usage limit. Please try again tomorrow or upgrade when Pro becomes available.",
+    ), 429
+
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

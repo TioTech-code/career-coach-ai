@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Recruiter Review | AI Career Coach</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="logo">
+        <i class="fa-solid fa-briefcase"></i>
+        AI Career Coach
+    </div>
+
+    <div class="nav-links">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/application-builder">Application Builder</a>
+        <a href="/jobs">Job Tracker</a>
+        <a href="/logout">Log Out</a>
+    </div>
+</nav>
+
+<section class="form-section">
+    <span class="badge">AI Recruiter Mode</span>
+
+    <h1>See your application through a recruiter’s eyes</h1>
+
+    <p>
+        Paste your CV and the job description to receive a realistic recruiter-style review.
+    </p>
+
+    {% if error %}
+        <div class="form-error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="POST">
+        <label>Job title</label>
+        <input
+            type="text"
+            name="job_title"
+            placeholder="Software Engineering Apprentice"
+            required
+        >
+
+        <label>Company</label>
+        <input
+            type="text"
+            name="company"
+            placeholder="BT"
+            required
+        >
+
+        <label>Your CV</label>
+        <textarea
+            name="cv"
+            placeholder="Paste your CV here..."
+            required
+        ></textarea>
+
+        <label>Job description</label>
+        <textarea
+            name="job_description"
+            placeholder="Paste the job description here..."
+            required
+        ></textarea>
+
+        <button type="submit">
+            Run Recruiter Review →
+        </button>
+    </form>
+</section>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
