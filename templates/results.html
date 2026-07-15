@@ -125,7 +125,65 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     <div class="feedback-box">
         {{ feedback | safe }}
     </div>
+<section class="recruiter-review">
 
+    <h2>👨‍💼 Recruiter's Verdict</h2>
+
+    <div class="recruiter-card">
+
+        <div class="verdict">
+
+            <h3>Would I shortlist this candidate?</h3>
+
+            <span class="verdict-badge">
+                {{ recruiter_review.verdict }}
+            </span>
+
+        </div>
+
+        <div class="confidence">
+
+            <h4>Confidence</h4>
+
+            <p>{{ recruiter_review.confidence }}%</p>
+
+        </div>
+
+        <div class="strengths">
+
+            <h4>Strengths</h4>
+
+            <ul>
+                {% for item in recruiter_review.strengths %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+
+        </div>
+
+        <div class="concerns">
+
+            <h4>Concerns</h4>
+
+            <ul>
+                {% for item in recruiter_review.concerns %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+
+        </div>
+
+        <div class="advice">
+
+            <h4>Final Advice</h4>
+
+            <p>{{ recruiter_review.advice }}</p>
+
+        </div>
+
+    </div>
+
+</section>
 </section>
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>

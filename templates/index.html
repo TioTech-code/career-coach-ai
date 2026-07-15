@@ -13,11 +13,7 @@
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet"
     >
-<link
-    rel="icon"
-    type="image/png"
-    href="{{ url_for('static', filename='favicon.png') }}"
->
+
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='style.css') }}"
@@ -27,441 +23,865 @@
 <body>
 
 <nav class="site-nav">
-    <a class="brand" href="/">
-        <a class="brand" href="/">
-    <img
-        src="{{ url_for('static', filename='images/logo.png') }}"
-        alt="AI Career Coach Logo"
-        class="brand-logo"
-    >
 
-    <span>AI Career Coach</span>
-</a>
+    <a class="brand" href="/">
+
+        <img
+            src="{{ url_for('static', filename='images/logo.png') }}"
+            class="brand-logo"
+            alt="AI Career Coach Logo"
+        >
+
+        <span>AI Career Coach</span>
+
     </a>
 
     <div class="nav-links">
+
         <a href="#features">Features</a>
+
         <a href="#how-it-works">How it works</a>
 
+        <a href="#pricing">Pricing</a>
+
         {% if current_user.is_authenticated %}
+
             <a href="/dashboard">Dashboard</a>
+
             <a href="/logout">Log Out</a>
+
         {% else %}
+
             <a href="/login">Log In</a>
-            <a class="nav-cta" href="/register">Start Free</a>
+
+            <a class="nav-cta" href="/register">
+
+                Start Free
+
+            </a>
+
         {% endif %}
+
     </div>
+
 </nav>
 
 <main>
 
-    <section class="home-hero">
-        <div class="hero-copy">
-            <span class="eyebrow">
-                AI-powered career support
-            </span>
+<section class="home-hero">
 
-            <h1>
-    Land Your Dream Job
-    <span>With AI.</span>
+<div class="hero-copy">
+
+<span class="eyebrow">
+
+AI-powered career platform
+
+</span>
+
+<h1>
+
+Land Your Dream Job
+
+<span>With AI.</span>
+
 </h1>
 
 <p>
-    Transform your CV into a recruiter-ready application using powerful AI.
-    Analyse your CV, improve ATS performance, generate tailored cover
-    letters, practise interviews and track every application—all in one
-    intelligent platform.
+
+Improve your CV, generate tailored cover letters,
+prepare for interviews, track every application,
+and receive personalised AI career guidance in one place.
+
 </p>
-            <div class="hero-actions">
-                {% if current_user.is_authenticated %}
-                    <a class="primary-action" href="/dashboard">
-                        Open Dashboard →
-                    </a>
-                {% else %}
-                    <a class="primary-action" href="/register">
-                        Start Free →
-                    </a>
 
-                    <a class="secondary-action" href="/login">
-                        Log In
-                    </a>
-                {% endif %}
-            </div>
-            <div class="hero-badges">
+<div class="hero-actions">
 
-        <span>📄 CV Review</span>
+{% if current_user.is_authenticated %}
 
-        <span>🎯 Job Match</span>
+<a class="primary-action" href="/dashboard">
 
-        <span>👨‍💼 Recruiter AI</span>
+Open Dashboard →
 
-        <span>🎤 Interview Coach</span>
+</a>
 
-        <span>💼 Job Tracker</span>
+{% else %}
 
-    </div>
+<a class="primary-action" href="/register">
 
-    <!-- THEN THIS -->
+Start Free →
 
-    <div class="trust-row">
+</a>
 
-        <span>🤖 AI Powered</span>
+<a class="secondary-action" href="/login">
 
-        <span>⚡ Instant Feedback</span>
+Log In
 
-        <span>📈 ATS Optimised</span>
+</a>
 
-        <span>💼 Built for Job Seekers</span>
-
-    </div>
+{% endif %}
 
 </div>
 
-            <div class="trust-row">
+<div class="hero-badges">
 
-    <span>🤖 AI Powered</span>
+<span>📄 CV Review</span>
 
-    <span>⚡ Instant Feedback</span>
+<span>🎯 Job Match</span>
 
-    <span>📈 ATS Optimised</span>
+<span>👨‍💼 Recruiter AI</span>
 
-    <span>💼 Built for Job Seekers</span>
+<span>🎤 Interview Coach</span>
+
+<span>💼 Job Tracker</span>
 
 </div>
-        </div>
 
-        <div class="hero-preview">
-            <div class="preview-card">
-                <div class="preview-top">
-                    <div>
-                        <p class="preview-label">AI Career Dashboard</p>
-                        <h2>86<span>/100</span></h2>
-                    </div>
+<div class="trust-row">
 
-                    <span class="preview-status">Strong CV</span>
-                </div>
+<span>🤖 AI Powered</span>
 
-                <div class="preview-bar">
-                    <div style="width: 86%;"></div>
-                </div>
-                
+<span>⚡ Instant Feedback</span>
+
+<span>📈 ATS Optimised</span>
+
+<span>💼 Built for Every Career</span>
+
+</div>
+
+</div>
+
+<div class="hero-preview">
+
+<div class="preview-card">
+
+<div class="preview-top">
+
+<div>
+
+<p class="preview-label">
+
+AI Career Dashboard
+
+</p>
+
+<h2>
+
+86<span>/100</span>
+
+</h2>
+
+</div>
+
+<span class="preview-status">
+
+Strong CV
+
+</span>
+
+</div>
+
+<div class="preview-bar">
+
+<div style="width:86%;"></div>
+
+</div>
+
+<div class="preview-list">
+
+<div>
+
+<span>CV Quality</span>
+
+<strong>86%</strong>
+
+</div>
+
+<div>
+
+<span>ATS Ready</span>
+
+<strong>82%</strong>
+
+</div>
+
+<div>
+
+<span>Job Match</span>
+
+<strong>79%</strong>
+
+</div>
+
+<div>
+
+<span>Interview Ready</span>
+
+<strong>84%</strong>
+
+</div>
+
+</div>
+
 <div class="preview-tip">
-    <strong>Recruiter Insight</strong>
 
-    <p>
-        Tailor your CV to each role by highlighting the most relevant skills,
-        experience, achievements, and keywords from the job description.
-    </p>
+<strong>
+
+Recruiter Insight
+
+</strong>
+
+<p>
+
+Tailor your CV for every application by matching
+skills and achievements to the job description.
+
+</p>
+
 </div>
-                <div class="preview-list">
-                    <div>
-                        <span>Contact details</span>
-                        <strong>10/10</strong>
-                    </div>
 
-                    <div>
-                        <span>Experience</span>
-                        <strong>16/20</strong>
-                    </div>
+</div>
 
-                    <div>
-                        <span>Skills</span>
-                        <strong>13/15</strong>
-                    </div>
+</div>
 
-                    <div>
-                        <span>ATS readiness</span>
-                        <strong>8/10</strong>
-                    </div>
-                </div>
+</section>
+<section class="home-features" id="features">
 
-                <div class="preview-tip">
-                    <strong>Top recommendation</strong>
-                    <p>Add measurable achievements to your experience section.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div class="section-heading">
 
-    <section class="home-features" id="features">
-        <div class="section-heading">
-            <span class="eyebrow">Everything in one place</span>
-            <h2>Tools designed to improve your applications</h2>
+        <span class="eyebrow">
+            Everything in one place
+        </span>
+
+        <h2>
+            Tools designed to improve every application
+        </h2>
+
+        <p>
+            Get clear feedback, practical improvements and useful next steps
+            instead of generic career advice.
+        </p>
+
+    </div>
+
+    <div class="feature-grid">
+
+        <article class="product-card">
+
+            <span class="product-icon">📄</span>
+
+            <h3>
+                AI CV Review
+            </h3>
+
             <p>
-                Get clear feedback and practical next steps instead of generic advice.
+                Receive a detailed CV score, personalised feedback,
+                strengths and practical improvements.
             </p>
-        </div>
 
-        <div class="feature-grid">
-            <article class="product-card">
-    <span class="product-icon">📄</span>
-    <h3>AI CV Review</h3>
-    <p>Receive a detailed CV score, personalised feedback and practical improvements.</p>
-</article>
+        </article>
 
-<article class="product-card">
-    <span class="product-icon">🎯</span>
-    <h3>Job Match</h3>
-    <p>Compare your CV with any job description and discover missing skills and keywords.</p>
-</article>
+        <article class="product-card">
 
-<article class="product-card">
-    <span class="product-icon">👨‍💼</span>
-    <h3>Recruiter Review</h3>
-    <p>See how an experienced recruiter would assess your CV before you apply.</p>
-</article>
+            <span class="product-icon">🎯</span>
 
-<article class="product-card">
-    <span class="product-icon">🎤</span>
-    <h3>Interview Simulator</h3>
-    <p>Practise realistic interview questions and receive AI coaching.</p>
-</article>
+            <h3>
+                Job Match
+            </h3>
 
-<article class="product-card">
-    <span class="product-icon">✉️</span>
-    <h3>Cover Letter Generator</h3>
-    <p>Create tailored cover letters for every application in seconds.</p>
-</article>
+            <p>
+                Compare your CV with any job description and identify
+                missing skills, experience and important keywords.
+            </p>
 
-<article class="product-card">
-    <span class="product-icon">📝</span>
-    <h3>CV Rewriter</h3>
-    <p>Improve your wording while keeping your experience truthful and accurate.</p>
-</article>
+        </article>
 
-<article class="product-card">
-    <span class="product-icon">💼</span>
-    <h3>Job Tracker</h3>
-    <p>Organise your applications from Saved to Offer in one place.</p>
-</article>
+        <article class="product-card">
 
-<article class="product-card">
-    <span class="product-icon">📊</span>
-    <h3>Analytics Dashboard</h3>
-    <p>Track your progress, scores and application performance over time.</p>
-</article>
+            <span class="product-icon">👨‍💼</span>
 
-<article class="product-card">
-    <span class="product-icon">🚀</span>
-    <h3>Application Builder</h3>
-    <p>Generate a complete application report with AI-powered insights.</p>
-</article>
-        </div>
-    </section>
+            <h3>
+                Recruiter Review
+            </h3>
+
+            <p>
+                See how a recruiter may assess your evidence,
+                suitability, strengths and concerns before you apply.
+            </p>
+
+        </article>
+
+        <article class="product-card">
+
+            <span class="product-icon">🎤</span>
+
+            <h3>
+                Interview Simulator
+            </h3>
+
+            <p>
+                Practise realistic interview questions and receive
+                personalised feedback on your answers.
+            </p>
+
+        </article>
+
+        <article class="product-card">
+
+            <span class="product-icon">✉️</span>
+
+            <h3>
+                Cover Letter Generator
+            </h3>
+
+            <p>
+                Create tailored cover letters using your CV
+                and the role you are applying for.
+            </p>
+
+        </article>
+
+        <article class="product-card">
+
+            <span class="product-icon">📝</span>
+
+            <h3>
+                CV Rewriter
+            </h3>
+
+            <p>
+                Improve weak wording while keeping your qualifications,
+                skills and experience truthful.
+            </p>
+
+        </article>
+
+        <article class="product-card">
+
+            <span class="product-icon">💼</span>
+
+            <h3>
+                Job Tracker
+            </h3>
+
+            <p>
+                Organise opportunities from Saved to Applied,
+                Interview, Offer or Rejected.
+            </p>
+
+        </article>
+
+        <article class="product-card">
+
+            <span class="product-icon">📊</span>
+
+            <h3>
+                Analytics Dashboard
+            </h3>
+
+            <p>
+                Track CV scores, job applications,
+                interviews and offers over time.
+            </p>
+
+        </article>
+
+        <article class="product-card">
+
+            <span class="product-icon">🚀</span>
+
+            <h3>
+                Application Builder
+            </h3>
+
+            <p>
+                Create a complete application report with scoring,
+                keyword analysis and AI-powered improvements.
+            </p>
+
+        </article>
+
+    </div>
+
+</section>
+
+
 <section class="stats-section">
 
     <div class="stat-box">
-        <h2>50,000+</h2>
-        <p>CV Reviews Generated</p>
-    </div>
 
-    <div class="stat-box">
-        <h2>98%</h2>
-        <p>ATS Keyword Accuracy</p>
-    </div>
+        <h2>
+            9+
+        </h2>
 
-    <div class="stat-box">
-        <h2>15+</h2>
-        <p>AI Career Tools</p>
-    </div>
-
-    <div class="stat-box">
-        <h2>24/7</h2>
-        <p>Instant AI Feedback</p>
-    </div>
-<section class="why-section">
-    <div class="section-heading">
-        <span class="eyebrow">Why choose us</span>
-        <h2>Everything you need to apply with confidence</h2>
         <p>
-            Go beyond generic AI advice with tools designed to improve,
-            organise and strengthen every part of your job search.
+            Career tools
         </p>
+
+    </div>
+
+    <div class="stat-box">
+
+        <h2>
+            24/7
+        </h2>
+
+        <p>
+            Instant AI guidance
+        </p>
+
+    </div>
+
+    <div class="stat-box">
+
+        <h2>
+            1
+        </h2>
+
+        <p>
+            Complete application platform
+        </p>
+
+    </div>
+
+    <div class="stat-box">
+
+        <h2>
+            AI
+        </h2>
+
+        <p>
+            Personalised support
+        </p>
+
+    </div>
+
+</section>
+
+
+<section class="why-section">
+
+    <div class="section-heading">
+
+        <span class="eyebrow">
+            Why choose us
+        </span>
+
+        <h2>
+            Everything you need to apply with confidence
+        </h2>
+
+        <p>
+            Improve, organise and strengthen every part of your job search
+            from one simple platform.
+        </p>
+
     </div>
 
     <div class="why-grid">
+
         <article class="why-card">
-            <span class="why-icon">⚡</span>
+
+            <span class="why-icon">
+                ⚡
+            </span>
+
             <div>
-                <h3>Save hours on every application</h3>
+
+                <h3>
+                    Save time on every application
+                </h3>
+
                 <p>
-                    Review CVs, tailor applications, create cover letters and
-                    prepare for interviews in one place.
+                    Review CVs, create cover letters, prepare for interviews
+                    and track applications without switching between tools.
                 </p>
+
             </div>
+
         </article>
 
         <article class="why-card">
-            <span class="why-icon">🎯</span>
+
+            <span class="why-icon">
+                🎯
+            </span>
+
             <div>
-                <h3>Apply with clearer direction</h3>
+
+                <h3>
+                    Apply with clearer direction
+                </h3>
+
                 <p>
-                    See missing skills, important keywords and the exact changes
-                    that could strengthen your application.
+                    Identify missing skills, important keywords
+                    and practical changes before submitting an application.
                 </p>
+
             </div>
+
         </article>
 
         <article class="why-card">
-            <span class="why-icon">🛡️</span>
+
+            <span class="why-icon">
+                🛡️
+            </span>
+
             <div>
-                <h3>Truthful, evidence-based guidance</h3>
+
+                <h3>
+                    Truthful guidance
+                </h3>
+
                 <p>
-                    Improve your wording without inventing qualifications,
-                    achievements or experience.
+                    Improve your wording without inventing experience,
+                    qualifications, achievements or skills.
                 </p>
+
             </div>
+
         </article>
 
         <article class="why-card">
-            <span class="why-icon">📈</span>
+
+            <span class="why-icon">
+                📈
+            </span>
+
             <div>
-                <h3>Track real progress</h3>
+
+                <h3>
+                    Track real progress
+                </h3>
+
                 <p>
-                    Monitor CV scores, application stages, interviews and offers
-                    from your personal dashboard.
+                    Monitor CV scores, applications,
+                    interviews and offers from your dashboard.
                 </p>
+
             </div>
+
         </article>
+
     </div>
+
 </section>
-</section>
-    <section class="how-section" id="how-it-works">
-        <div class="section-heading">
-            <span class="eyebrow">Simple process</span>
-            <h2>From CV to useful feedback in three steps</h2>
+
+
+<section class="how-section" id="how-it-works">
+
+    <div class="section-heading">
+
+        <span class="eyebrow">
+            Simple process
+        </span>
+
+        <h2>
+            Improve your application in three steps
+        </h2>
+
+        <p>
+            Start with your CV, receive useful guidance,
+            then improve and track your progress.
+        </p>
+
+    </div>
+
+    <div class="steps-grid">
+
+        <div class="step-card">
+
+            <span>
+                01
+            </span>
+
+            <h3>
+                Add your CV
+            </h3>
+
+            <p>
+                Upload a PDF or paste your CV directly into the platform.
+            </p>
+
         </div>
 
-        <div class="steps-grid">
-            <div class="step-card">
-                <span>01</span>
-                <h3>Upload your CV</h3>
-                <p>Use a PDF or paste your CV directly into the platform.</p>
-            </div>
+        <div class="step-card">
 
-            <div class="step-card">
-                <span>02</span>
-                <h3>Receive your analysis</h3>
-                <p>Get a consistent score and personalised AI feedback.</p>
-            </div>
+            <span>
+                02
+            </span>
 
-            <div class="step-card">
-                <span>03</span>
-                <h3>Improve and track progress</h3>
-                <p>Make changes, upload again, and monitor your results.</p>
-            </div>
+            <h3>
+                Receive your analysis
+            </h3>
+
+            <p>
+                Get scoring, feedback, missing keywords
+                and personalised recommendations.
+            </p>
+
         </div>
-    </section>
+
+        <div class="step-card">
+
+            <span>
+                03
+            </span>
+
+            <h3>
+                Improve and track progress
+            </h3>
+
+            <p>
+                Make changes, review again
+                and monitor your applications over time.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
 <section class="testimonials">
 
-    <h2>What Users Say</h2>
+    <div class="section-heading">
+
+        <span class="eyebrow">
+            Example feedback
+        </span>
+
+        <h2>
+            Built for real job seekers
+        </h2>
+
+        <p>
+            Replace these examples with verified customer feedback after launch.
+        </p>
+
+    </div>
 
     <div class="testimonial-grid">
 
         <article class="testimonial-card">
+
             <p>
-                "The recruiter review completely changed how I presented my CV.
-                It helped me prepare much better for interviews."
+                “The recruiter review helped me understand how to present
+                my experience more clearly.”
             </p>
 
-            <strong>★★★★★</strong>
+            <strong>
+                ★★★★★
+            </strong>
 
-            <span>Graduate Software Engineer</span>
+            <span>
+                Illustrative example
+            </span>
+
         </article>
 
         <article class="testimonial-card">
+
             <p>
-                "The dashboard and job tracker kept everything organised in one
-                place. It saved me hours."
+                “The dashboard and job tracker made it easier to keep
+                all my applications organised.”
             </p>
 
-            <strong>★★★★★</strong>
+            <strong>
+                ★★★★★
+            </strong>
 
-            <span>University Student</span>
+            <span>
+                Illustrative example
+            </span>
+
         </article>
 
         <article class="testimonial-card">
+
             <p>
-                "The ATS suggestions were clear and practical. I improved my CV
-                score significantly."
+                “The ATS suggestions were practical and gave me clear
+                next steps before applying.”
             </p>
 
-            <strong>★★★★★</strong>
+            <strong>
+                ★★★★★
+            </strong>
 
-            <span>Apprenticeship Applicant</span>
+            <span>
+                Illustrative example
+            </span>
+
         </article>
 
     </div>
 
 </section>
-    <section class="final-cta">
-        <div>
-            <span class="eyebrow">Improve your next application</span>
-            <h2>Start building a CV that gets noticed.</h2>
-        </div>
 
-        {% if current_user.is_authenticated %}
-            <a class="primary-action" href="/dashboard">Open Dashboard →</a>
-        {% else %}
-            <a class="primary-action" href="/register">Create Free Account →</a>
-        {% endif %}
-    </section>
 
-</main>
-<section class="pricing">
+<section class="pricing" id="pricing">
 
-    <h2>Simple Pricing</h2>
+    <div class="section-heading">
+
+        <span class="eyebrow">
+            Simple pricing
+        </span>
+
+        <h2>
+            Start free and upgrade when you need more
+        </h2>
+
+        <p>
+            Use the core tools for free and unlock higher limits
+            when the Pro plan launches.
+        </p>
+
+    </div>
 
     <div class="pricing-grid">
 
         <div class="price-card">
 
-            <h3>Free</h3>
+            <h3>
+                Free
+            </h3>
 
-            <h1>£0</h1>
+            <h2>
+                £0
+            </h2>
 
             <ul>
-                <li>✓ CV Reviews</li>
+                <li>✓ Limited AI reviews</li>
                 <li>✓ Job Tracker</li>
-                <li>✓ Dashboard</li>
+                <li>✓ Analytics Dashboard</li>
+                <li>✓ Review History</li>
             </ul>
+
+            {% if current_user.is_authenticated %}
+
+                <a class="secondary-action" href="/dashboard">
+                    Open Dashboard
+                </a>
+
+            {% else %}
+
+                <a class="secondary-action" href="/register">
+                    Start Free
+                </a>
+
+            {% endif %}
 
         </div>
 
         <div class="price-card featured">
 
-            <span>Most Popular</span>
+            <span class="price-badge">
+                Coming Soon
+            </span>
 
-            <h3>Pro</h3>
+            <h3>
+                Pro
+            </h3>
 
-            <h1>£9.99/month</h1>
+            <h2>
+                £9.99/month
+            </h2>
 
             <ul>
-                <li>✓ Unlimited AI</li>
-                <li>✓ Recruiter Review</li>
-                <li>✓ PDF Reports</li>
-                <li>✓ Future Premium Features</li>
+                <li>✓ Higher AI usage limits</li>
+                <li>✓ AI Recruiter Review</li>
+                <li>✓ PDF reports</li>
+                <li>✓ Advanced analytics</li>
+                <li>✓ Future premium features</li>
             </ul>
+
+            <a class="primary-action" href="/register">
+                Join Free First
+            </a>
 
         </div>
 
     </div>
 
 </section>
+
+
+<section class="final-cta">
+
+    <div>
+
+        <span class="eyebrow">
+            Improve your next application
+        </span>
+
+        <h2>
+            Start building an application that gets noticed.
+        </h2>
+
+    </div>
+
+    {% if current_user.is_authenticated %}
+
+        <a class="primary-action" href="/dashboard">
+            Open Dashboard →
+        </a>
+
+    {% else %}
+
+        <a class="primary-action" href="/register">
+            Create Free Account →
+        </a>
+
+    {% endif %}
+
+</section>
+
+</main>
+
+
 <footer class="site-footer">
+
     <a class="brand" href="/">
-        <span class="brand-icon">✦</span>
-        <span>AI Career Coach</span>
+
+        <img
+            src="{{ url_for('static', filename='images/logo.png') }}"
+            class="brand-logo"
+            alt="AI Career Coach Logo"
+        >
+
+        <span>
+            AI Career Coach
+        </span>
+
     </a>
 
     <div class="footer-links">
-        <a href="#features">Features</a>
-        <a href="/privacy">Privacy</a>
-        <a href="/terms">Terms</a>
-        <a href="/contact">Contact</a>
+
+        <a href="#features">
+            Features
+        </a>
+
+        <a href="#pricing">
+            Pricing
+        </a>
+
+        <a href="/privacy">
+            Privacy
+        </a>
+
+        <a href="/terms">
+            Terms
+        </a>
+
+        <a href="/contact">
+            Contact
+        </a>
+
     </div>
 
-    <p>© 2026 AI Career Coach.</p>
+    <p>
+        © 2026 AI Career Coach.
+    </p>
+
 </footer>
 
 </body>

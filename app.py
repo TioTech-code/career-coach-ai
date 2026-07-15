@@ -1,3 +1,4 @@
+import json
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask import Flask, render_template, request, redirect, url_for
@@ -224,22 +225,33 @@ def review():
 
         uploaded_file.save(filepath)
 
-        reader = PdfReader(filepath)
+        try:
+            reader = PdfReader(filepath)
 
-        for page in reader.pages:
-            text = page.extract_text()
+            for page in reader.pages:
+                text = page.extract_text()
 
-            if text:
-                cv_text += text + "\n"
+                if text:
+                    cv_text += text + "\n"
+
+        except Exception:
+            return render_template(
+                "cv_review.html",
+                error="We could not read that PDF. Please try another file or paste your CV.",
+            )
+
     else:
-        cv_text = request.form.get("cv", "")
+        cv_text = request.form.get("cv", "").strip()
 
-    if not cv_text.strip():
-        return "Please upload a PDF or paste your CV."
+    if not cv_text:
+        return render_template(
+            "cv_review.html",
+            error="Please upload a PDF or paste your CV.",
+        )
 
     overall_score, score_breakdown = score_cv(cv_text)
 
-    prompt = f"""
+    review_prompt = f"""
 You are an experienced professional CV reviewer.
 
 IMPORTANT:
@@ -264,33 +276,130 @@ Generate three interview questions.
 # 🚀 Final Advice
 Write one short paragraph.
 
+Do not invent qualifications, experience, skills or achievements.
+
 CV:
 
 {cv_text}
 """
 
+    recruiter_prompt = f"""
+You are a professional recruiter assessing a CV before deciding whether
+the candidate should progress.
+
+Assess only the evidence contained in the CV.
+Do not invent qualifications, experience, skills or achievements.
+
+Return valid JSON only, using exactly this structure:
+
+{{
+    "verdict": "Shortlist" or "Possible Shortlist" or "Do Not Shortlist",
+    "confidence": 0,
+    "strengths": [
+        "First strength",
+        "Second strength",
+        "Third strength"
+    ],
+    "concerns": [
+        "First concern",
+        "Second concern",
+        "Third concern"
+    ],
+    "advice": "One short paragraph of final recruiter advice."
+}}
+
+The confidence value must be an integer from 0 to 100.
+
+CV:
+
+{cv_text}
+"""
+
+    feedback = """
+<h2>AI is temporarily unavailable.</h2>
+<p>Please wait a few seconds and try again.</p>
+"""
+
+    recruiter_review = {
+        "verdict": "Review unavailable",
+        "confidence": 0,
+        "strengths": [
+            "The recruiter assessment could not be generated.",
+        ],
+        "concerns": [
+            "Please try the review again in a few moments.",
+        ],
+        "advice": (
+            "Your CV score was still calculated successfully, "
+            "but the recruiter assessment is temporarily unavailable."
+        ),
+    }
+
     try:
-        response = client.chat.completions.create(
+        review_response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
                 {
                     "role": "user",
-                    "content": prompt,
+                    "content": review_prompt,
                 }
             ],
             max_tokens=700,
         )
 
         feedback = markdown.markdown(
-            response.choices[0].message.content,
+            review_response.choices[0].message.content,
             extensions=["extra"],
         )
 
-    except Exception:
-        feedback = """
-<h2>AI is temporarily unavailable.</h2>
-<p>Please wait a few seconds and try again.</p>
-"""
+        recruiter_response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {
+                    "role": "user",
+                    "content": recruiter_prompt,
+                }
+            ],
+            max_tokens=550,
+            response_format={
+                "type": "json_object",
+            },
+        )
+
+        recruiter_review = json.loads(
+            recruiter_response.choices[0].message.content
+        )
+
+        recruiter_review["confidence"] = max(
+            0,
+            min(
+                100,
+                int(recruiter_review.get("confidence", 0)),
+            ),
+        )
+
+        recruiter_review.setdefault(
+            "verdict",
+            "Possible Shortlist",
+        )
+        recruiter_review.setdefault(
+            "strengths",
+            [],
+        )
+        recruiter_review.setdefault(
+            "concerns",
+            [],
+        )
+        recruiter_review.setdefault(
+            "advice",
+            "Review the detailed feedback before applying.",
+        )
+
+    except Exception as error:
+        app.logger.exception(
+            "AI CV review failed: %s",
+            error,
+        )
 
     saved_review = Review(
         score=overall_score,
@@ -306,8 +415,8 @@ CV:
         feedback=feedback,
         overall_score=overall_score,
         score_breakdown=score_breakdown,
+        recruiter_review=recruiter_review,
     )
-
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
