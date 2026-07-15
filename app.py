@@ -1,7 +1,7 @@
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask import Flask, render_template, request, redirect, url_for
-
+from sqlalchemy import inspect, text
 from flask_login import (
     login_user,
     logout_user,
@@ -55,6 +55,45 @@ login_manager.init_app(app)
 with app.app_context():
     db.create_all()
 
+    inspector = inspect(db.engine)
+
+    user_columns = {
+        column["name"]
+        for column in inspector.get_columns("user")
+    }
+
+    if "subscription" not in user_columns:
+        db.session.execute(
+            text(
+                """
+                ALTER TABLE "user"
+                ADD COLUMN subscription VARCHAR(20)
+                NOT NULL DEFAULT 'Free'
+                """
+            )
+        )
+
+    if "stripe_customer_id" not in user_columns:
+        db.session.execute(
+            text(
+                """
+                ALTER TABLE "user"
+                ADD COLUMN stripe_customer_id VARCHAR(255)
+                """
+            )
+        )
+
+    if "stripe_subscription_id" not in user_columns:
+        db.session.execute(
+            text(
+                """
+                ALTER TABLE "user"
+                ADD COLUMN stripe_subscription_id VARCHAR(255)
+                """
+            )
+        )
+
+    db.session.commit()
 os.makedirs(
     app.config["UPLOAD_FOLDER"],
     exist_ok=True,
