@@ -2063,3 +2063,9 @@ footer {
 .footer-links a:hover {
     color: white;
 }
+.brand-logo {
+    height: 42px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+}
