@@ -1059,7 +1059,19 @@ def rate_limit_reached(error):
         "limit_reached.html",
         message="You have reached today's free AI usage limit. Please try again tomorrow or upgrade when Pro becomes available.",
     ), 429
+@app.route("/privacy")
+def privacy():
+    return render_template("privacy.html")
 
+
+@app.route("/terms")
+def terms():
+    return render_template("terms.html")
+
+
+@app.route("/contact")
+def contact():
+    return render_template("contact.html")
 
 if __name__ == "__main__":
     with app.app_context():
