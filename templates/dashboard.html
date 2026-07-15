@@ -119,10 +119,14 @@
         </div>
     </section>
 
-    <section class="dashboard-stats">
+  <section class="dashboard-stats">
 
-        <div class="stat-card">
-            <p>Latest Score</p>
+    <div class="stat-card">
+        <div class="stat-icon">📄</div>
+
+        <div>
+            <p>CV Score</p>
+
             <h2>
                 {% if latest_score is not none %}
                     {{ latest_score }}/100
@@ -130,15 +134,59 @@
                     —
                 {% endif %}
             </h2>
-        </div>
 
-        <div class="stat-card">
-            <p>Total Reviews</p>
-            <h2>{{ total_reviews }}</h2>
+            <span class="stat-detail">
+                {% if improvement is not none %}
+                    {% if improvement > 0 %}
+                        +{{ improvement }} since last review
+                    {% elif improvement < 0 %}
+                        {{ improvement }} since last review
+                    {% else %}
+                        No change
+                    {% endif %}
+                {% else %}
+                    Complete another review to track progress
+                {% endif %}
+            </span>
         </div>
+    </div>
 
-        <div class="stat-card">
+    <div class="stat-card">
+        <div class="stat-icon">💼</div>
+
+        <div>
+            <p>Applications</p>
+            <h2>{{ total_applications }}</h2>
+            <span class="stat-detail">Jobs currently tracked</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">🎤</div>
+
+        <div>
+            <p>Interviews</p>
+            <h2>{{ interview_count }}</h2>
+            <span class="stat-detail">Applications at interview stage</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">🎉</div>
+
+        <div>
+            <p>Offers</p>
+            <h2>{{ offer_count }}</h2>
+            <span class="stat-detail">Offers received</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">📈</div>
+
+        <div>
             <p>Average Score</p>
+
             <h2>
                 {% if average_score is not none %}
                     {{ average_score }}/100
@@ -146,41 +194,177 @@
                     —
                 {% endif %}
             </h2>
+
+            <span class="stat-detail">
+                Based on {{ total_reviews }} CV reviews
+            </span>
+        </div>
+    </div>
+
+</section>
+<section class="ai-insights">
+
+    <div class="insights-card">
+
+        <div class="insights-header">
+            <h2>🤖 AI Career Insights</h2>
+
+            <span class="insight-badge">
+                Personalised
+            </span>
         </div>
 
-        <div class="stat-card">
-            <p>Best Score</p>
-            <h2>
-                {% if best_score is not none %}
-                    {{ best_score }}/100
-                {% else %}
-                    —
-                {% endif %}
-            </h2>
+        <div class="insight-list">
+
+            <div class="insight-item">
+
+                <span>📈</span>
+
+                <div>
+
+                    <strong>CV Progress</strong>
+
+                    <p>
+                        {% if improvement is not none %}
+
+                            {% if improvement > 0 %}
+                                Great work! Your CV score has improved by
+                                {{ improvement }} points.
+                            {% elif improvement < 0 %}
+                                Your latest review scored lower.
+                                Review your feedback and strengthen weak areas.
+                            {% else %}
+                                Your score is stable.
+                                Tailor your CV for your next application.
+                            {% endif %}
+
+                        {% else %}
+
+                            Complete another CV review to unlock AI insights.
+
+                        {% endif %}
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="insight-item">
+
+                <span>💼</span>
+
+                <div>
+
+                    <strong>Applications</strong>
+
+                    <p>
+
+                        You're currently tracking
+
+                        <strong>{{ total_applications }}</strong>
+
+                        job applications.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="insight-item">
+
+                <span>🎯</span>
+
+                <div>
+
+                    <strong>Recommendation</strong>
+
+                    <p>
+
+                        Tailor every CV to the job description for better
+                        ATS performance and stronger interview chances.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="insight-item">
+
+                <span>🎤</span>
+
+                <div>
+
+                    <strong>Next Step</strong>
+
+                    <p>
+
+                        Practise an AI Interview before your next application.
+
+                    </p>
+
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="stat-card">
-            <p>Latest Change</p>
-            <h2>
-                {% if improvement is not none %}
-                    {% if improvement > 0 %}
-                        +{{ improvement }}
-                    {% else %}
-                        {{ improvement }}
-                    {% endif %}
-                {% else %}
-                    —
-                {% endif %}
-            </h2>
-        </div>
+        <a href="/cv-review" class="insight-button">
 
-    </section>
+            Improve My CV →
 
-    <section class="cards">
+        </a>
 
-        <div class="card">
-            <h3>🚀 Application Builder</h3>
+    </div>
 
+</section>
+<section class="quick-actions-section">
+    <div class="section-heading-left">
+        <span class="badge">Quick Actions</span>
+        <h2>What would you like to do?</h2>
+    </div>
+
+    <div class="quick-actions-grid">
+        <a class="quick-action" href="/cv-review">
+            <span>📄</span>
+            <strong>Review CV</strong>
+        </a>
+
+        <a class="quick-action" href="/job-match">
+            <span>🎯</span>
+            <strong>Match a Job</strong>
+        </a>
+
+        <a class="quick-action" href="/recruiter-review">
+            <span>👨‍💼</span>
+            <strong>Recruiter Review</strong>
+        </a>
+
+        <a class="quick-action" href="/interview">
+            <span>🎤</span>
+            <strong>Practise Interview</strong>
+        </a>
+
+        <a class="quick-action" href="/cover-letter">
+            <span>✉️</span>
+            <strong>Cover Letter</strong>
+        </a>
+
+        <a class="quick-action" href="/jobs">
+            <span>💼</span>
+            <strong>Track Jobs</strong>
+        </a>
+    </div>
+</section>
+<section class="cards">
+
+    <div class="card">
+        <h3>🚀 Application Builder</h3>
+
+        
+
+       
             <p>
                 Build a complete application report with CV scoring, job matching,
                 readiness analysis, missing keywords, and CV rewriting.
