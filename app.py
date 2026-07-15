@@ -1,3 +1,4 @@
+import stripe
 import json
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -100,10 +101,14 @@ os.makedirs(
     exist_ok=True,
 )
 
-client = Groq(
+cclient = Groq(
     api_key=os.getenv("GROQ_API_KEY")
 )
 
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+
+STRIPE_PRICE_ID = os.getenv("STRIPE_PRICE_ID")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -204,7 +209,7 @@ def cv_review():
 @app.route("/review", methods=["POST"])
 @login_required
 @limiter.limit(
-    "3 per day",
+    "1000 per day",
     exempt_when=lambda: (
         current_user.is_authenticated
         and current_user.subscription == "Pro"
@@ -522,7 +527,7 @@ def view_review(review_id):
 @app.route("/job-match", methods=["GET", "POST"])
 @login_required
 @limiter.limit(
-    "3 per day",
+    "1000 per day",
     exempt_when=lambda: (
         current_user.is_authenticated
         and current_user.subscription == "Pro"
@@ -610,7 +615,7 @@ JOB DESCRIPTION:
 @app.route("/cover-letter", methods=["GET", "POST"])
 @login_required
 @limiter.limit(
-    "2 per day",
+    "1000 per day",
     exempt_when=lambda: (
         current_user.is_authenticated
         and current_user.subscription == "Pro"
@@ -675,14 +680,14 @@ JOB DESCRIPTION:
 """
 
     return render_template(
-        "cover_letter_results.html",
+        "cover_letter_results.htmlok",
         letter=letter,
     )
 
 @app.route("/application-readiness", methods=["GET", "POST"])
 @login_required
 @limiter.limit(
-    "2 per day",
+    "1000 per day",
     exempt_when=lambda: (
         current_user.is_authenticated
         and current_user.subscription == "Pro"
@@ -738,7 +743,7 @@ def application_readiness():
 @app.route("/rewrite", methods=["GET", "POST"])
 @login_required
 @limiter.limit(
-    "2 per day",
+    "1000 per day",
     exempt_when=lambda: (
         current_user.is_authenticated
         and current_user.subscription == "Pro"
@@ -769,7 +774,7 @@ def rewrite():
     )
 @app.route("/application-builder", methods=["GET", "POST"])
 @login_required
-@limiter.limit("1 per day")
+@limiter.limit("1000 per day")
 def application_builder():
     if request.method == "GET":
         return render_template("application_builder.html")
@@ -831,7 +836,7 @@ def application_builder():
 @app.route("/interview", methods=["GET", "POST"])
 @login_required
 @limiter.limit(
-    "3 per day",
+    "1000 per day",
     exempt_when=lambda: (
         current_user.is_authenticated
         and current_user.subscription == "Pro"
@@ -897,7 +902,7 @@ Return only the question.
 @app.route("/interview-feedback", methods=["POST"])
 @login_required
 @limiter.limit(
-    "3 per day",
+    "1000 per day",
     exempt_when=lambda: (
         current_user.is_authenticated
         and current_user.subscription == "Pro"
@@ -1054,7 +1059,7 @@ def delete_job(job_id):
 @app.route("/recruiter-review", methods=["GET", "POST"])
 @login_required
 @limiter.limit(
-    "1 per day",
+    "1000 per day",
     exempt_when=lambda: (
         current_user.is_authenticated
         and current_user.subscription == "Pro"
@@ -1154,13 +1159,12 @@ Finish by clearly stating that this is AI guidance, not a hiring guarantee.
 <p>Please wait a few seconds and try again.</p>
 """
 
-        return render_template(
+    return render_template(
         "recruiter_results.html",
         recruiter_feedback=recruiter_feedback,
         job_title=job_title,
         company=company,
     )
-
 
 @app.errorhandler(429)
 def rate_limit_reached(error):
@@ -1181,6 +1185,96 @@ def terms():
 @app.route("/contact")
 def contact():
     return render_template("contact.html")
+
+
+@app.route("/upgrade")
+@login_required
+def upgrade():
+
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            mode="subscription",
+            line_items=[
+                {
+                    "price": STRIPE_PRICE_ID,
+                    "quantity": 1,
+                }
+            ],
+            customer_email=current_user.email,
+            client_reference_id=str(current_user.id),
+            success_url=url_for(
+                "upgrade_success",
+                _external=True,
+            ),
+            cancel_url=url_for(
+                "dashboard",
+                _external=True,
+            ),
+        )
+
+        return redirect(
+            checkout_session.url,
+            code=303,
+        )
+
+    except Exception as e:
+        return str(e)
+
+
+@app.route("/upgrade-success")
+@login_required
+def upgrade_success():
+
+    current_user.subscription = "Pro"
+
+    db.session.commit()
+
+    return render_template(
+        "upgrade_success.html"
+    )
+@app.route("/webhook", methods=["POST"])
+def stripe_webhook():
+
+    payload = request.data
+    signature = request.headers.get("Stripe-Signature")
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload,
+            signature,
+            STRIPE_WEBHOOK_SECRET,
+        )
+
+    except ValueError:
+        return "Invalid payload", 400
+
+    except stripe.error.SignatureVerificationError:
+        return "Invalid signature", 400
+
+    if event["type"] == "checkout.session.completed":
+
+        session = event["data"]["object"]
+
+        user_id = session.get("client_reference_id")
+
+        if user_id:
+
+            user = db.session.get(User, int(user_id))
+
+            if user:
+
+                user.subscription = "Pro"
+
+                user.stripe_customer_id = session.get("customer")
+
+                user.stripe_subscription_id = session.get(
+                    "subscription"
+                )
+
+                db.session.commit()
+
+    return "", 200
 
 if __name__ == "__main__":
     with app.app_context():

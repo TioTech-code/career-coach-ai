@@ -2069,3 +2069,35 @@ footer {
     object-fit: contain;
     display: block;
 }
+.pro-card{
+    margin-top:40px;
+    padding:30px;
+    border-radius:20px;
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);
+    color:white;
+    text-align:center;
+}
+
+.pro-card h2{
+    margin-bottom:10px;
+}
+
+.pro-card p{
+    opacity:.95;
+    margin-bottom:25px;
+}
+
+.pro-button{
+    display:inline-block;
+    padding:14px 28px;
+    border-radius:12px;
+    background:white;
+    color:#4f46e5;
+    text-decoration:none;
+    font-weight:700;
+    transition:.25s;
+}
+
+.pro-button:hover{
+    transform:translateY(-2px);
+}

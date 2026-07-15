@@ -95,6 +95,34 @@
                 </a>
             </div>
         </div>
+        <div class="pro-card">
+
+    <h2>🚀 AI Career Coach Pro</h2>
+
+    <p>
+        Unlock unlimited AI reviews, Job Match,
+        Cover Letters, Interview Coach,
+        Recruiter Reviews and every future Pro feature.
+    </p>
+
+    {% if current_user.subscription == "Pro" %}
+
+        <button class="pro-button" disabled>
+            ✅ You are a Pro Member
+        </button>
+
+    {% else %}
+
+        <a
+            class="pro-button"
+            href="/upgrade"
+        >
+            Upgrade for £9.99/month
+        </a>
+
+    {% endif %}
+
+</div>
 
         <div class="landing-right">
             <div class="premium-card">
