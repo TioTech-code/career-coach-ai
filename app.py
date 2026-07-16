@@ -1226,10 +1226,6 @@ def upgrade():
 @login_required
 def upgrade_success():
 
-    current_user.subscription = "Pro"
-
-    db.session.commit()
-
     return render_template(
         "upgrade_success.html"
     )
@@ -1254,25 +1250,21 @@ def stripe_webhook():
 
     if event["type"] == "checkout.session.completed":
 
-        session = event["data"]["object"]
+              session = event["data"]["object"]
 
-        user_id = session.get("client_reference_id")
+    user_id = session.client_reference_id
 
-        if user_id:
+    if user_id:
 
-            user = db.session.get(User, int(user_id))
+        user = db.session.get(User, int(user_id))
 
-            if user:
+        if user:
 
-                user.subscription = "Pro"
+            user.subscription = "Pro"
+            user.stripe_customer_id = session.customer
+            user.stripe_subscription_id = session.subscription
 
-                user.stripe_customer_id = session.get("customer")
-
-                user.stripe_subscription_id = session.get(
-                    "subscription"
-                )
-
-                db.session.commit()
+            db.session.commit()
 
     return "", 200
 
