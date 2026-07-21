@@ -102,8 +102,9 @@ os.makedirs(
     exist_ok=True,
 )
 
+
 client = Groq(
-    api_key=os.getenv("GROQ_API_KEY")
+    api_key=os.environ.get("GROQ_API_KEY")
 )
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
