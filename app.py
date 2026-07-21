@@ -1,3 +1,4 @@
+from decorators import pro_required
 import stripe
 import json
 from flask_limiter import Limiter
@@ -123,6 +124,9 @@ def index():
 @app.route("/dashboard")
 @login_required
 def dashboard():
+
+    print("Subscription:", current_user.subscription)
+    print("User ID:", current_user.id)
     reviews = (
         Review.query
         .filter_by(user_id=current_user.id)
@@ -209,7 +213,7 @@ def cv_review():
 @app.route("/review", methods=["POST"])
 @login_required
 @limiter.limit(
-    "1000 per day",
+    "3 per day",
     exempt_when=lambda: (
         current_user.is_authenticated
         and current_user.subscription == "Pro"
@@ -527,7 +531,7 @@ def view_review(review_id):
 @app.route("/job-match", methods=["GET", "POST"])
 @login_required
 @limiter.limit(
-    "1000 per day",
+    "3 per day",
     exempt_when=lambda: (
         current_user.is_authenticated
         and current_user.subscription == "Pro"
@@ -614,8 +618,9 @@ JOB DESCRIPTION:
 
 @app.route("/cover-letter", methods=["GET", "POST"])
 @login_required
+@pro_required
 @limiter.limit(
-    "1000 per day",
+    "3 per day",
     exempt_when=lambda: (
         current_user.is_authenticated
         and current_user.subscription == "Pro"
@@ -686,8 +691,9 @@ JOB DESCRIPTION:
 
 @app.route("/application-readiness", methods=["GET", "POST"])
 @login_required
+@pro_required
 @limiter.limit(
-    "1000 per day",
+    "3 per day",
     exempt_when=lambda: (
         current_user.is_authenticated
         and current_user.subscription == "Pro"
@@ -742,6 +748,7 @@ def application_readiness():
 
 @app.route("/rewrite", methods=["GET", "POST"])
 @login_required
+@pro_required
 @limiter.limit(
     "1000 per day",
     exempt_when=lambda: (
@@ -774,7 +781,8 @@ def rewrite():
     )
 @app.route("/application-builder", methods=["GET", "POST"])
 @login_required
-@limiter.limit("1000 per day")
+@pro_required
+@limiter.limit("3 per day")
 def application_builder():
     if request.method == "GET":
         return render_template("application_builder.html")
@@ -835,8 +843,9 @@ def application_builder():
     )    
 @app.route("/interview", methods=["GET", "POST"])
 @login_required
+@pro_required
 @limiter.limit(
-    "1000 per day",
+    "3 per day",
     exempt_when=lambda: (
         current_user.is_authenticated
         and current_user.subscription == "Pro"
@@ -901,8 +910,9 @@ Return only the question.
 
 @app.route("/interview-feedback", methods=["POST"])
 @login_required
+@pro_required
 @limiter.limit(
-    "1000 per day",
+    "3 per day",
     exempt_when=lambda: (
         current_user.is_authenticated
         and current_user.subscription == "Pro"
@@ -1058,8 +1068,9 @@ def delete_job(job_id):
 
 @app.route("/recruiter-review", methods=["GET", "POST"])
 @login_required
+@pro_required
 @limiter.limit(
-    "1000 per day",
+    "3 per day",
     exempt_when=lambda: (
         current_user.is_authenticated
         and current_user.subscription == "Pro"
@@ -1250,23 +1261,30 @@ def stripe_webhook():
 
     if event["type"] == "checkout.session.completed":
 
-              session = event["data"]["object"]
+        session = event["data"]["object"]
 
-    user_id = session.client_reference_id
+        print("Event:", event["type"])
+        print("User ID:", session.client_reference_id)
 
-    if user_id:
+        user_id = session.client_reference_id
 
-        user = db.session.get(User, int(user_id))
+        if user_id:
 
-        if user:
+            user = db.session.get(User, int(user_id))
 
-            user.subscription = "Pro"
-            user.stripe_customer_id = session.customer
-            user.stripe_subscription_id = session.subscription
+            if user:
 
-            db.session.commit()
+                user.subscription = "Pro"
+                user.stripe_customer_id = session.customer
+                user.stripe_subscription_id = session.subscription
+
+                db.session.commit()
 
     return "", 200
+@app.route("/pricing")
+def pricing():
+    return render_template("pricing.html")
+
 
 if __name__ == "__main__":
     with app.app_context():

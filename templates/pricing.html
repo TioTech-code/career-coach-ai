@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pricing | AI Career Coach</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <main class="pricing-section">
+
+        <div class="pricing-header">
+            <h1>Choose your plan</h1>
+
+            <p>
+                Start free or upgrade to unlock every AI career tool.
+            </p>
+        </div>
+
+        <div class="pricing-grid">
+
+            <div class="pricing-card">
+                <h2>Free</h2>
+
+                <div class="price">
+                    £0 <span>/ month</span>
+                </div>
+
+                <ul>
+                    <li>✓ Limited CV reviews</li>
+                    <li>✓ Limited job matching</li>
+                    <li>✓ Application readiness checks</li>
+                    <li>✓ Job tracker</li>
+                    <li>✓ Review history</li>
+                    <li>✕ Cover letter generator</li>
+                    <li>✕ Recruiter review</li>
+                    <li>✕ Interview coach</li>
+                    <li>✕ Application builder</li>
+                    <li>✕ CV rewrite</li>
+                </ul>
+
+                <a href="{{ url_for('dashboard') }}"
+                   class="pricing-button secondary">
+                    Continue with Free
+                </a>
+            </div>
+
+            <div class="pricing-card featured">
+
+                <div class="popular-badge">
+                    Most Popular
+                </div>
+
+                <h2>Pro</h2>
+
+                <div class="price">
+                    £9.99 <span>/ month</span>
+                </div>
+
+                <ul>
+                    <li>✓ Unlimited CV reviews</li>
+                    <li>✓ Unlimited job matching</li>
+                    <li>✓ Unlimited readiness checks</li>
+                    <li>✓ Cover letter generator</li>
+                    <li>✓ Recruiter review</li>
+                    <li>✓ Interview coach</li>
+                    <li>✓ Application builder</li>
+                    <li>✓ CV rewrite</li>
+                </ul>
+
+                {% if current_user.is_authenticated
+                      and current_user.subscription == "Pro" %}
+
+                    <button class="pricing-button primary" disabled>
+                        ✓ You are already Pro
+                    </button>
+
+                {% elif current_user.is_authenticated %}
+
+                    <a href="{{ url_for('upgrade') }}"
+                       class="pricing-button primary">
+                        Upgrade to Pro
+                    </a>
+
+                {% else %}
+
+                    <a href="{{ url_for('register') }}"
+                       class="pricing-button primary">
+                        Create an account
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>
