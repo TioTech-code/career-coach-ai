@@ -685,13 +685,12 @@ JOB DESCRIPTION:
 """
 
     return render_template(
-        "cover_letter_results.htmlok",
-        letter=letter,
-    )
+    "cover_letter_results.html",
+    letter=letter,
+)
 
 @app.route("/application-readiness", methods=["GET", "POST"])
 @login_required
-@pro_required
 @limiter.limit(
     "3 per day",
     exempt_when=lambda: (
@@ -782,7 +781,6 @@ def rewrite():
 @app.route("/application-builder", methods=["GET", "POST"])
 @login_required
 @pro_required
-@limiter.limit("3 per day")
 def application_builder():
     if request.method == "GET":
         return render_template("application_builder.html")
