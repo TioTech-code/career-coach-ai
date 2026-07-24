@@ -2,15 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AI Career Coach</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Improve your CV, match with jobs, generate cover letters and prepare for interviews with AI Career Coach."
+    >
+
+    <title>AI Career Coach | Land More Interviews with AI</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet"
     >
 
@@ -20,228 +34,248 @@
     >
 </head>
 
-<body>
+<body class="home-page">
 
-<nav class="site-nav">
+<nav class="landing-nav">
 
-    <a class="brand" href="/">
+    <div class="landing-nav-inner">
 
-        <img
-            src="{{ url_for('static', filename='images/logo.png') }}"
-            class="brand-logo"
-            alt="AI Career Coach Logo"
-        >
+        <a class="landing-brand" href="/">
 
-        <span>AI Career Coach</span>
+            <img
+                src="{{ url_for('static', filename='images/logo.png') }}"
+                alt="AI Career Coach Logo"
+            >
 
-    </a>
+            <span>AI Career Coach</span>
 
-    <div class="nav-links">
+        </a>
 
-        <a href="#features">Features</a>
+        <div class="landing-nav-links">
 
-        <a href="#how-it-works">How it works</a>
+            <a href="#features">Features</a>
 
-        <a href="#pricing">Pricing</a>
+            <a href="#how-it-works">How it works</a>
 
-        {% if current_user.is_authenticated %}
+            <a href="#pricing">Pricing</a>
 
-            <a href="/dashboard">Dashboard</a>
+            {% if current_user.is_authenticated %}
 
-            <a href="/logout">Log Out</a>
+                <a href="/dashboard">Dashboard</a>
 
-        {% else %}
+                <a class="landing-nav-button" href="/logout">
+                    Log Out
+                </a>
 
-            <a href="/login">Log In</a>
+            {% else %}
 
-            <a class="nav-cta" href="/register">
+                <a href="/login">Log In</a>
 
-                Start Free
+                <a class="landing-nav-button" href="/register">
+                    Start Free
+                </a>
 
-            </a>
+            {% endif %}
 
-        {% endif %}
+        </div>
 
     </div>
 
 </nav>
 
+
 <main>
 
-<section class="home-hero">
+<section class="landing-hero">
 
-<div class="hero-copy">
+    <div class="landing-hero-copy">
 
-<span class="eyebrow">
+        <div class="landing-badge">
+            ✨ AI-powered career platform
+        </div>
 
-AI-powered career platform
+        <h1>
+            Land more interviews
+            <span>with AI.</span>
+        </h1>
 
-</span>
+        <p class="landing-hero-description">
+            Improve your CV, check your ATS score, match your application
+            to jobs, generate cover letters and prepare for interviews from
+            one powerful platform.
+        </p>
 
-<h1>
+        <div class="landing-hero-actions">
 
-Land Your Dream Job
+            {% if current_user.is_authenticated %}
 
-<span>With AI.</span>
+                <a class="landing-primary-button" href="/dashboard">
+                    Open Dashboard
+                    <span>→</span>
+                </a>
 
-</h1>
+            {% else %}
 
-<p>
+                <a class="landing-primary-button" href="/register">
+                    Review My CV Free
+                    <span>→</span>
+                </a>
 
-Improve your CV, generate tailored cover letters,
-prepare for interviews, track every application,
-and receive personalised AI career guidance in one place.
+                <a class="landing-secondary-button" href="#pricing">
+                    View Pricing
+                </a>
 
-</p>
+            {% endif %}
 
-<div class="hero-actions">
+        </div>
 
-{% if current_user.is_authenticated %}
+        <div class="landing-benefits">
 
-<a class="primary-action" href="/dashboard">
+            <span>✓ No credit card required</span>
 
-Open Dashboard →
+            <span>✓ Instant feedback</span>
 
-</a>
+            <span>✓ Built for every career</span>
 
-{% else %}
+        </div>
 
-<a class="primary-action" href="/register">
+    </div>
 
-Start Free →
 
-</a>
+    <div class="landing-preview">
 
-<a class="secondary-action" href="/login">
+        <div class="landing-preview-glow"></div>
 
-Log In
+        <div class="landing-score-card">
 
-</a>
+            <div class="landing-score-header">
 
-{% endif %}
+                <div>
 
-</div>
+                    <span class="landing-preview-label">
+                        AI CV Analysis
+                    </span>
 
-<div class="hero-badges">
+                    <h2>
+                        Your CV Score
+                    </h2>
 
-<span>📄 CV Review</span>
+                </div>
 
-<span>🎯 Job Match</span>
+                <span class="landing-live-badge">
+                    Live preview
+                </span>
 
-<span>👨‍💼 Recruiter AI</span>
+            </div>
 
-<span>🎤 Interview Coach</span>
 
-<span>💼 Job Tracker</span>
+            <div class="landing-main-score">
 
-</div>
+                <div class="landing-score-circle">
 
-<div class="trust-row">
+                    <strong>86</strong>
 
-<span>🤖 AI Powered</span>
+                    <span>/100</span>
 
-<span>⚡ Instant Feedback</span>
+                </div>
 
-<span>📈 ATS Optimised</span>
+                <div class="landing-score-message">
 
-<span>💼 Built for Every Career</span>
+                    <span>Strong CV</span>
 
-</div>
+                    <p>
+                        Your CV is well structured and close to
+                        being interview ready.
+                    </p>
 
-</div>
+                </div>
 
-<div class="hero-preview">
+            </div>
 
-<div class="preview-card">
 
-<div class="preview-top">
+            <div class="landing-score-results">
 
-<div>
+                <div class="landing-result-row">
 
-<p class="preview-label">
+                    <div>
 
-AI Career Dashboard
+                        <span>ATS compatibility</span>
 
-</p>
+                        <strong>82%</strong>
 
-<h2>
+                    </div>
 
-86<span>/100</span>
+                    <div class="landing-result-bar">
 
-</h2>
+                        <span style="width: 82%;"></span>
 
-</div>
+                    </div>
 
-<span class="preview-status">
+                </div>
 
-Strong CV
 
-</span>
+                <div class="landing-result-row">
 
-</div>
+                    <div>
 
-<div class="preview-bar">
+                        <span>Grammar and clarity</span>
 
-<div style="width:86%;"></div>
+                        <strong>94%</strong>
 
-</div>
+                    </div>
 
-<div class="preview-list">
+                    <div class="landing-result-bar">
 
-<div>
+                        <span style="width: 94%;"></span>
 
-<span>CV Quality</span>
+                    </div>
 
-<strong>86%</strong>
+                </div>
 
-</div>
 
-<div>
+                <div class="landing-result-row">
 
-<span>ATS Ready</span>
+                    <div>
 
-<strong>82%</strong>
+                        <span>Job readiness</span>
 
-</div>
+                        <strong>79%</strong>
 
-<div>
+                    </div>
 
-<span>Job Match</span>
+                    <div class="landing-result-bar">
 
-<strong>79%</strong>
+                        <span style="width: 79%;"></span>
 
-</div>
+                    </div>
 
-<div>
+                </div>
 
-<span>Interview Ready</span>
+            </div>
 
-<strong>84%</strong>
 
-</div>
+            <div class="landing-recruiter-tip">
 
-</div>
+                <div class="landing-tip-icon">
+                    💡
+                </div>
 
-<div class="preview-tip">
+                <div>
 
-<strong>
+                    <strong>Recruiter insight</strong>
 
-Recruiter Insight
+                    <p>
+                        Add measurable achievements to make your
+                        experience more convincing.
+                    </p>
 
-</strong>
+                </div>
 
-<p>
+            </div>
 
-Tailor your CV for every application by matching
-skills and achievements to the job description.
+        </div>
 
-</p>
-
-</div>
-
-</div>
-
-</div>
+    </div>
 
 </section>
 <section class="home-features" id="features">
@@ -731,10 +765,9 @@ skills and achievements to the job description.
         </h2>
 
         <p>
-            Use the core tools for free and unlock higher limits
-            when the Pro plan launches.
-        </p>
-
+    Start with the essential career tools for free,
+    then upgrade to unlock the complete AI career platform.
+</p>
     </div>
 
     <div class="pricing-grid">
@@ -775,8 +808,8 @@ skills and achievements to the job description.
         <div class="price-card featured">
 
             <span class="price-badge">
-                Coming Soon
-            </span>
+    Most Popular
+</span>
 
             <h3>
                 Pro
@@ -787,16 +820,37 @@ skills and achievements to the job description.
             </h2>
 
             <ul>
-                <li>✓ Higher AI usage limits</li>
-                <li>✓ AI Recruiter Review</li>
-                <li>✓ PDF reports</li>
-                <li>✓ Advanced analytics</li>
-                <li>✓ Future premium features</li>
-            </ul>
+    <li>✓ Unlimited CV rewriting</li>
+    <li>✓ Tailored cover letters</li>
+    <li>✓ AI Recruiter Review</li>
+    <li>✓ Interview Coach</li>
+    <li>✓ Application Builder</li>
+    <li>✓ Priority access to premium tools</li>
+</ul>
 
-            <a class="primary-action" href="/register">
-                Join Free First
-            </a>
+           {% if current_user.is_authenticated %}
+
+    {% if current_user.subscription == "Pro" %}
+
+        <a class="primary-action" href="/dashboard">
+            Open Pro Dashboard
+        </a>
+
+    {% else %}
+
+        <a class="primary-action" href="/upgrade">
+            Upgrade to Pro
+        </a>
+
+    {% endif %}
+
+{% else %}
+
+    <a class="primary-action" href="/register">
+        Create Account to Upgrade
+    </a>
+
+{% endif %}
 
         </div>
 

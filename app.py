@@ -50,7 +50,6 @@ limiter = Limiter(
     default_limits=["200 per day", "50 per hour"],
 )
 
-app.config.from_object(Config)
 
 db.init_app(app)
 login_manager.init_app(app)
@@ -221,10 +220,10 @@ def cv_review():
     ),
 )
 def review():
+
     cv_text = ""
 
     uploaded_file = request.files.get("cv_file")
-
     if uploaded_file and uploaded_file.filename:
         filename = secure_filename(uploaded_file.filename)
 
@@ -345,39 +344,79 @@ CV:
         ),
     }
 
+    combined_prompt = f"""
+You are an experienced professional CV reviewer and recruiter.
+
+Review the CV using only the evidence provided.
+Do not invent qualifications, experience, skills or achievements.
+
+Return valid JSON only using exactly this structure:
+
+{{
+    "feedback_markdown": "# 💪 Strengths\\n- Strength one\\n- Strength two\\n- Strength three\\n\\n# ⚠️ Improvements\\n- Improvement one\\n- Improvement two\\n- Improvement three\\n\\n# 🛠 Recommended Skills\\n- Skill one\\n- Skill two\\n- Skill three\\n\\n# 🎤 Interview Questions\\n- Question one\\n- Question two\\n- Question three\\n\\n# 🚀 Final Advice\\nOne short paragraph.",
+    "recruiter_review": {{
+        "verdict": "Shortlist or Possible Shortlist or Do Not Shortlist",
+        "confidence": 0,
+        "strengths": [
+            "First recruiter strength",
+            "Second recruiter strength",
+            "Third recruiter strength"
+        ],
+        "concerns": [
+            "First recruiter concern",
+            "Second recruiter concern",
+            "Third recruiter concern"
+        ],
+        "advice": "One short paragraph of recruiter advice."
+    }}
+}}
+
+The confidence must be an integer from 0 to 100.
+Do not include an overall CV score.
+
+CV:
+
+{cv_text}
+"""
+
     try:
-        review_response = client.chat.completions.create(
+        print(
+            "Before Groq request:",
+            round(time.perf_counter() - started_at, 2),
+            "seconds",
+        )
+
+        response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
                 {
                     "role": "user",
-                    "content": review_prompt,
+                    "content": combined_prompt,
                 }
             ],
-            max_tokens=700,
-        )
-
-        feedback = markdown.markdown(
-            review_response.choices[0].message.content,
-            extensions=["extra"],
-        )
-
-        recruiter_response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=[
-                {
-                    "role": "user",
-                    "content": recruiter_prompt,
-                }
-            ],
-            max_tokens=550,
+            max_tokens=900,
             response_format={
                 "type": "json_object",
             },
         )
 
-        recruiter_review = json.loads(
-            recruiter_response.choices[0].message.content
+        result = json.loads(
+            response.choices[0].message.content
+        )
+
+        feedback_markdown = result.get(
+            "feedback_markdown",
+            "The CV feedback could not be generated.",
+        )
+
+        feedback = markdown.markdown(
+            feedback_markdown,
+            extensions=["extra"],
+        )
+
+        recruiter_review = result.get(
+            "recruiter_review",
+            recruiter_review,
         )
 
         recruiter_review["confidence"] = max(
@@ -392,17 +431,26 @@ CV:
             "verdict",
             "Possible Shortlist",
         )
+
         recruiter_review.setdefault(
             "strengths",
             [],
         )
+
         recruiter_review.setdefault(
             "concerns",
             [],
         )
+
         recruiter_review.setdefault(
             "advice",
             "Review the detailed feedback before applying.",
+        )
+
+        print(
+            "Groq request finished:",
+            round(time.perf_counter() - started_at, 2),
+            "seconds",
         )
 
     except Exception as error:
@@ -410,6 +458,11 @@ CV:
             "AI CV review failed: %s",
             error,
         )
+    print(
+        "Total CV review time:",
+        round(time.perf_counter() - started_at, 2),
+        "seconds",
+    )
 
     saved_review = Review(
         score=overall_score,
@@ -1180,8 +1233,14 @@ Finish by clearly stating that this is AI guidance, not a hiring guarantee.
 def rate_limit_reached(error):
     return render_template(
         "limit_reached.html",
-        message="You have reached today's free AI usage limit. Please try again tomorrow or upgrade when Pro becomes available.",
+        message=(
+            "You have reached today's free AI usage limit. "
+            "Please try again tomorrow or upgrade to Pro "
+            "for unlimited access."
+        ),
     ), 429
+
+
 @app.route("/privacy")
 def privacy():
     return render_template("privacy.html")
@@ -1200,7 +1259,6 @@ def contact():
 @app.route("/upgrade")
 @login_required
 def upgrade():
-
     try:
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=["card"],
@@ -1218,7 +1276,7 @@ def upgrade():
                 _external=True,
             ),
             cancel_url=url_for(
-                "dashboard",
+                "pricing",
                 _external=True,
             ),
         )
@@ -1228,20 +1286,26 @@ def upgrade():
             code=303,
         )
 
-    except Exception as e:
-        return str(e)
+    except Exception as error:
+        app.logger.exception(
+            "Stripe checkout failed: %s",
+            error,
+        )
+
+        return (
+            "Unable to start checkout. Please try again.",
+            500,
+        )
 
 
 @app.route("/upgrade-success")
 @login_required
 def upgrade_success():
+    return render_template("upgrade_success.html")
 
-    return render_template(
-        "upgrade_success.html"
-    )
+
 @app.route("/webhook", methods=["POST"])
 def stripe_webhook():
-
     payload = request.data
     signature = request.headers.get("Stripe-Signature")
 
@@ -1259,27 +1323,29 @@ def stripe_webhook():
         return "Invalid signature", 400
 
     if event["type"] == "checkout.session.completed":
-
         session = event["data"]["object"]
 
-        print("Event:", event["type"])
-        print("User ID:", session.client_reference_id)
+        user_id = session.get("client_reference_id")
 
-        user_id = session.client_reference_id
+        print("Event:", event["type"])
+        print("User ID:", user_id)
 
         if user_id:
-
-            user = db.session.get(User, int(user_id))
+            user = db.session.get(
+                User,
+                int(user_id),
+            )
 
             if user:
-
                 user.subscription = "Pro"
-                user.stripe_customer_id = session.customer
-                user.stripe_subscription_id = session.subscription
+                user.stripe_customer_id = session.get("customer")
+                user.stripe_subscription_id = session.get("subscription")
 
                 db.session.commit()
 
     return "", 200
+
+
 @app.route("/pricing")
 def pricing():
     return render_template("pricing.html")
