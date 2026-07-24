@@ -380,12 +380,6 @@ CV:
 """
 
     try:
-        print(
-            "Before Groq request:",
-            round(time.perf_counter() - started_at, 2),
-            "seconds",
-        )
-
         response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
@@ -447,23 +441,11 @@ CV:
             "Review the detailed feedback before applying.",
         )
 
-        print(
-            "Groq request finished:",
-            round(time.perf_counter() - started_at, 2),
-            "seconds",
-        )
-
     except Exception as error:
         app.logger.exception(
             "AI CV review failed: %s",
             error,
         )
-    print(
-        "Total CV review time:",
-        round(time.perf_counter() - started_at, 2),
-        "seconds",
-    )
-
     saved_review = Review(
         score=overall_score,
         feedback=feedback,
